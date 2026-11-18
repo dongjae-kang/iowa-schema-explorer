@@ -1,0 +1,2022 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Iowa Schema Explorer</title>
+<meta name="description" content="Explore the Iowa liquor database through its result, design and stored tables. Follow joins, trace values and inspect rows with no match.">
+<meta property="og:title" content="Iowa Schema Explorer">
+<meta property="og:description" content="Explore three database layers, follow joins and trace result columns to their stored rows.">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2212%22%20fill%3D%22%23181818%22%2F%3E%3Cpath%20d%3D%22m10%2022%2022-10%2022%2010-22%2010Z%22%20fill%3D%22%23ededdf%22%2F%3E%3Cpath%20d%3D%22m10%2032%2022%2010%2022-10M10%2042l22%2010%2022-10%22%20fill%3D%22none%22%20stroke%3D%22%23bdbdb1%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E">
+
+<script id="style-config">
+/* All direction-specific decisions live here. Copy one branch or one token. */
+window.EXPLORER_STYLE = (() => {
+  const STYLE = {
+    a: {
+      name: 'Porcelain', defaultTheme: 'dark',
+      palette: {
+        light: {
+          page: '#f3f0e9', surface: '#fffdf8', stage: '#eeeae2', ink: '#272822',
+          'ink-2': '#595b52', muted: '#67695f', hair: '#dcd8ce', axis: '#b5b7ac',
+          key: '#2365ac', critical: '#b52f43', warning: '#e7b84a', 'warning-ink': '#805900',
+          block: '#faf8ef', 'block-fact': '#bcbeb0', 'block-edge': '#6f7665',
+          plane: '#dfdfd3', 'code-bg': '#e9e7df', focus: '#272822',
+          shadow: '#35382f', 'tag-critical-ink': '#ffffff', 'tag-key-ink': '#ffffff',
+          'card-shadow': '0 12px 32px #35382f14, 0 2px 5px #35382f0a',
+          'label-shadow': '0 2px 5px #35382f0b'
+        },
+        dark: {
+          page: '#242621', surface: '#2c2f28', stage: '#1e211c', ink: '#f1f0e6',
+          'ink-2': '#c3c7b7', muted: '#a1a896', hair: '#42483b', axis: '#6c7560',
+          key: '#82bafa', critical: '#f38190', warning: '#f5d578', 'warning-ink': '#f5d578',
+          block: '#9ca791', 'block-fact': '#69765c', 'block-edge': '#d0d7be',
+          plane: '#4c5542', 'code-bg': '#353a30', focus: '#f1f0e6',
+          shadow: '#000000', 'tag-critical-ink': '#21191b', 'tag-key-ink': '#182431',
+          'card-shadow': '0 14px 36px #00000030, 0 2px 5px #00000020',
+          'label-shadow': '0 2px 6px #00000020'
+        }
+      },
+      ui: {
+        'body-font': 'system-ui, -apple-system, "Segoe UI", sans-serif',
+        'heading-font': 'Iowan Old Style, Palatino, Georgia, serif',
+        'label-font': 'system-ui, -apple-system, sans-serif',
+        'mono-font': 'ui-monospace, Menlo, "SF Mono", Consolas, monospace',
+        'body-size': '14px', 'body-leading': '1.6', 'title-size': '19px',
+        'heading-size': '24px', 'heading-weight': '500', 'heading-tracking': '-.025em',
+        'label-size': '12px', 'label-detail-size': '11px', 'label-padding': '3px 6px',
+        'label-radius': '6px', 'label-border': 'transparent', 'label-alpha': '93%',
+        'overview-label-alpha': '72%', 'overview-border-mix': '30%', 'overview-leader-alpha': '0.45', 'overview-weight': '500',
+        'label-weight': '650', 'label-tracking': '0', 'layer-size': '14px',
+        'small-size': '11.5px', 'key-size': '11px', 'col-size': '11.5px',
+        'control-radius': '8px', 'card-radius': '12px', 'card-padding': '14px 16px',
+        'card-size': '12px', 'card-heading-size': '15px', 'card-leading': '1.5',
+        'card-cell-padding': '6px 8px', 'panel-width': '410px',
+        'panel-padding': '24px 24px 28px', 'section-gap': '22px',
+        'bar-padding': '12px 20px', 'legend-alpha': '95%', 'legend-radius': '10px', 'legend-padding': '9px 12px',
+        'control-padding': '6px 12px', 'control-size': '13px', 'hover-mix': '7%',
+        'highlight-mix': '11%', 'label-transition': '160ms', 'code-radius': '6px'
+      },
+      materials: {
+        body: { roughness: 0.72, metalness: 0.02 },
+        signal: { roughness: 0.52, metalness: 0 },
+        plate: { roughness: 0.88, metalness: 0, opacity: 0.32 },
+        edgeOpacity: 0.28, selectedEdgeOpacity: 1, plateEdgeOpacity: 0.5, mappingOpacity: 0.44, overviewMappingOpacity: 0.22,
+        dashSize: 0.40, gapSize: 0.22
+      },
+      lights: {
+        sky: '#ffffff', ground: '#999d8c', hemisphere: 1.8,
+        key: { color: '#ffffff', intensity: 3.0, position: [-24, 50, 30] },
+        fill: { color: '#ffffff', intensity: 0.9, position: [32, 18, 12] },
+        rim: { color: '#ffffff', intensity: 1.2, position: [8, 35, -30] },
+        exposure: 1.1
+      },
+      geometry: {
+        layers: { built: 0, design: 15, user: 29 }, plane: { w: 40, d: 26 },
+        heightScale: 1.15, widthBase: 1.4, widthPerColumn: 0.13, blockDepth: 2.4,
+        blockRadius: 0.22, bevelSegments: 3, outlineSegments: 5,
+        plateThickness: 0.18, plateRadius: 0.085,
+        tile: { w: 4.2, h: 0.38, d: 2.2, radius: 0.16 },
+        column: { w: 2.9, gap: 0.35, d: 5.2, h: 0.28, radius: 0.12, labelY: 0.75 },
+        rodSegments: 12, joinRadius: 0.105, branchRadius: 0.11, stopRadius: 0.055,
+        relationRadius: 0.055, copyRadius: 0.085, traceRadius: 0.095, dotRadius: 0.20,
+        tubeSegments: 40, tubeSides: 8,
+        cube: { size: 0.26, gap: 0.07, across: 5, deep: 3, radius: 0.025, segments: 1 }
+      },
+      labels: { columnStagger: [0, 2.2, 0, 2.2, 0], blockLift: 0.9, tileY: 1.05 },
+      camera: {
+        fov: 38,
+        views: {
+          all: { pos: [26, 45, 70], target: [0, 13.5, 0] },
+          user: { pos: [0, 55, 22], target: [0, 29, 4] },
+          design: { pos: [2, 52, 26], target: [2, 15, 1] },
+          built: { pos: [9, 25, 38], target: [0, 2.5, 0] }
+        },
+        focusDirection: [6, 16, 34], traceDirection: [0, 6, 55]
+      },
+      fx: { postprocessing: false, shadowMap: false, envIntensity: 0, contactShadows: true, shadowOpacity: 0.22, shadowSpread: 1.65, shadowY: 0.012, textureSize: 64, shadowStops: [[0, 1], [0.45, 0.6], [1, 0]], pixelRatio: 1.75 }
+    },
+    b: {
+      name: 'Graphite', defaultTheme: 'dark',
+      palette: {
+        light: {
+          page: '#e6e6e4', surface: '#f7f7f5', stage: '#d9d9d7', ink: '#252525',
+          'ink-2': '#545452', muted: '#5f5f59', hair: '#cececa', axis: '#aaaaa5',
+          key: '#215eaa', critical: '#a92b42', warning: '#dbae40', 'warning-ink': '#795500',
+          block: '#b0b0ac', 'block-fact': '#777773', 'block-edge': '#595955',
+          plane: '#babab5', 'code-bg': '#e1e1dc', focus: '#252525',
+          shadow: '#272725', 'tag-critical-ink': '#ffffff', 'tag-key-ink': '#ffffff',
+          'card-shadow': '0 8px 22px #1820191c', 'label-shadow': 'none'
+        },
+        dark: {
+          page: '#202020', surface: '#2b2b2a', stage: '#181818', ink: '#f1f1ed',
+          'ink-2': '#cacac4', muted: '#aeaea6', hair: '#4d4d47', axis: '#76766d',
+          key: '#83bafb', critical: '#ff6b6b', warning: '#f4d786', 'warning-ink': '#f4d786',
+          block: '#969690', 'block-fact': '#666660', 'block-edge': '#dbdbd2',
+          plane: '#62625b', 'code-bg': '#3a3a34', focus: '#f1f1ed',
+          shadow: '#000000', 'tag-critical-ink': '#23171b', 'tag-key-ink': '#162536',
+          'card-shadow': '0 12px 32px #00000048', 'label-shadow': 'none'
+        }
+      },
+      ui: {
+        'body-font': 'system-ui, -apple-system, "Segoe UI", sans-serif',
+        'heading-font': 'system-ui, -apple-system, "Segoe UI", sans-serif',
+        'label-font': 'ui-monospace, Menlo, "SF Mono", Consolas, monospace',
+        'mono-font': 'ui-monospace, Menlo, "SF Mono", Consolas, monospace',
+        'body-size': '14px', 'body-leading': '1.55', 'title-size': '17px',
+        'heading-size': '22px', 'heading-weight': '650', 'heading-tracking': '-.035em',
+        'label-size': '11.5px', 'label-detail-size': '11px', 'label-padding': '3px 6px',
+        'label-radius': '2px', 'label-border': 'var(--hair)', 'label-alpha': '96%',
+        'overview-label-alpha': '68%', 'overview-border-mix': '30%', 'overview-leader-alpha': '0.45', 'overview-weight': '500',
+        'label-weight': '600', 'label-tracking': '-.02em', 'layer-size': '13px',
+        'small-size': '11.5px', 'key-size': '11px', 'col-size': '11.5px',
+        'control-radius': '3px', 'card-radius': '3px', 'card-padding': '14px 16px',
+        'card-size': '12px', 'card-heading-size': '15px', 'card-leading': '1.45',
+        'card-cell-padding': '6px 8px', 'panel-width': '410px',
+        'panel-padding': '24px 24px 28px', 'section-gap': '22px',
+        'bar-padding': '12px 20px', 'legend-alpha': '96%', 'legend-radius': '3px', 'legend-padding': '9px 12px',
+        'control-padding': '6px 12px', 'control-size': '13px', 'hover-mix': '9%',
+        'highlight-mix': '15%', 'label-transition': '120ms', 'code-radius': '2px'
+      },
+      materials: {
+        body: { roughness: 0.38, metalness: 0.24 },
+        signal: { roughness: 0.48, metalness: 0.02 },
+        plate: { roughness: 0.48, metalness: 0.16, opacity: 0.22 },
+        edgeOpacity: 0.62, selectedEdgeOpacity: 1, plateEdgeOpacity: 0.72, mappingOpacity: 0.50, overviewMappingOpacity: 0.22,
+        dashSize: 0.28, gapSize: 0.18
+      },
+      lights: {
+        sky: '#ffffff', ground: '#878780', hemisphere: 1.6,
+        key: { color: '#ffffff', intensity: 3.2, position: [-22, 42, 18] },
+        fill: { color: '#ffffff', intensity: 1.2, position: [32, 20, 20] },
+        rim: { color: '#ffffff', intensity: 2.6, position: [8, 25, -26] },
+        exposure: 1.0
+      },
+      geometry: {
+        layers: { built: 0, design: 15, user: 29 }, plane: { w: 40, d: 26 },
+        heightScale: 1.15, widthBase: 1.4, widthPerColumn: 0.13, blockDepth: 2.4,
+        blockRadius: 0.07, bevelSegments: 1, outlineSegments: 2,
+        plateThickness: 0.28, plateRadius: 0.06,
+        tile: { w: 4.2, h: 0.26, d: 2.2, radius: 0.055 },
+        column: { w: 2.9, gap: 0.35, d: 5.2, h: 0.20, radius: 0.045, labelY: 0.75 },
+        rodSegments: 8, joinRadius: 0.09, branchRadius: 0.10, stopRadius: 0.055,
+        relationRadius: 0.05, copyRadius: 0.075, traceRadius: 0.095, dotRadius: 0.20,
+        tubeSegments: 40, tubeSides: 8,
+        cube: { size: 0.26, gap: 0.07, across: 5, deep: 3, radius: 0.012, segments: 1 }
+      },
+      labels: { columnStagger: [0, 2.2, 0, 2.2, 0], blockLift: 0.9, tileY: 1.0 },
+      camera: {
+        fov: 38,
+        views: {
+          all: { pos: [20, 47, 70], target: [0, 13.5, 0] },
+          user: { pos: [0, 56, 23], target: [0, 29, 4] },
+          design: { pos: [2, 53, 27], target: [2, 15, 1] },
+          built: { pos: [9, 25, 38], target: [0, 2.5, 0] }
+        },
+        focusDirection: [6, 16, 34], traceDirection: [0, 6, 55]
+      },
+      fx: { postprocessing: false,
+        // shadowMap off by default: on the dark plate a cast shadow added no visible change (3.6% of pixels, all faint) and cost about 10x load time in software WebGL
+        shadowMap: false, shadowMapSize: 1024, shadowPadding: 0.8, shadowBias: -0.0002, shadowNormalBias: 0.025,
+        envIntensity: 0.16, envBlur: 0.04, signalEnvScale: 0.35, fullContactScale: 0.35,
+        contactShadows: true, shadowOpacity: 0.32, shadowSpread: 1.45, shadowY: 0.012, textureSize: 64, shadowStops: [[0, 1], [0.45, 0.6], [1, 0]], pixelRatio: 1.75 }
+    }
+  };
+  const params = new URLSearchParams(location.hash.slice(1));
+  const id = params.get('style') === 'a' ? 'a' : 'b';
+  const preset = STYLE[id];
+  const root = document.documentElement;
+  function applyPalette() {
+    const requested = new URLSearchParams(location.hash.slice(1)).get('theme');
+    const theme = ['light', 'dark'].includes(requested) ? requested : requested === 'auto'
+      ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : preset.defaultTheme;
+    root.dataset.style = id;
+    root.dataset.theme = theme;
+    root.style.colorScheme = theme;
+    for (const [token, value] of Object.entries({ ...preset.palette[theme], ...preset.ui })) root.style.setProperty('--' + token, value);
+  }
+  applyPalette();
+  const mode = ['0', 'lite'].includes(params.get('fx')) ? params.get('fx') : '1';
+  return { STYLE, id, preset, applyPalette, effects: {
+    mode, contact: mode !== '0' && preset.fx.contactShadows,
+    shadows: mode === '1' && !!preset.fx.shadowMap,
+    environment: mode === '1' && preset.fx.envIntensity > 0
+  } };
+})();
+</script>
+<style>
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--body-font);
+    font-size: var(--body-size);
+    line-height: var(--body-leading);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  code, pre, .mono { font-family: var(--mono-font); }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  /* top bar */
+  .bar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px;
+    padding: var(--bar-padding); border-bottom: 1px solid var(--hair); background: var(--surface);
+  }
+  .bar .title { margin-right: auto; min-width: 0; }
+  .bar h1 { font-family: var(--heading-font); font-size: var(--title-size); line-height: 1.3; margin: 0; font-weight: var(--heading-weight); letter-spacing: var(--heading-tracking); }
+  .bar .sub { margin: 2px 0 0; color: var(--ink-2); font-size: 12.5px; }
+  .seg { display: inline-flex; border: 1px solid var(--axis); border-radius: var(--control-radius); overflow: hidden; }
+  .seg button {
+    border: 0; background: transparent; padding: var(--control-padding); cursor: pointer; font-size: var(--control-size);
+    border-right: 1px solid var(--axis);
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+  :root[data-theme="dark"] #themeSwitch [data-theme-choice="dark"],
+  :root[data-theme="light"] #themeSwitch [data-theme-choice="light"] { background: var(--ink); color: var(--surface); }
+  :root[data-theme="dark"] #themeSwitch [data-theme-choice="light"],
+  :root[data-theme="light"] #themeSwitch [data-theme-choice="dark"] { background: transparent; color: var(--ink); }
+  .btn {
+    border: 1px solid var(--axis); background: var(--surface); border-radius: var(--control-radius);
+    padding: var(--control-padding); cursor: pointer; font-size: var(--control-size);
+  }
+  .btn[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+
+  /* layout */
+  .layout { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) var(--panel-width); min-height: 0; }
+  .stage { position: relative; min-height: 560px; overflow: hidden; background: var(--stage); }
+  .stage canvas { display: block; }
+  .labels { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+  .panel {
+    border-left: 1px solid var(--hair); background: var(--page);
+    padding: var(--panel-padding); overflow-y: auto; max-height: calc(100vh - 62px);
+  }
+
+  /* 3D labels */
+  .lab {
+    pointer-events: auto; cursor: pointer; border: 1px solid var(--label-border);
+    background: color-mix(in srgb, var(--surface) var(--label-alpha), transparent);
+    padding: var(--label-padding); border-radius: var(--label-radius);
+    font-family: var(--label-font); font-size: var(--label-size); line-height: 1.25;
+    color: var(--ink); text-align: center; white-space: nowrap;
+    letter-spacing: var(--label-tracking); box-shadow: var(--label-shadow);
+    transition: opacity var(--label-transition);
+  }
+  .overview-mode .built-leaders { opacity: var(--overview-leader-alpha); }
+  .overview-mode .lab:not(.layer):not(.tbl):not(.sel) {
+    background: color-mix(in srgb, var(--surface) var(--overview-label-alpha), transparent);
+    border-color: color-mix(in srgb, var(--hair) var(--overview-border-mix), transparent);
+    box-shadow: none;
+  }
+  .overview-mode .lab:not(.layer):not(.tbl):not(.sel):not(.key):not(.crit):not(.warn) { color: var(--ink-2); }
+  .overview-mode .lab:not(.layer):not(.tbl):not(.sel) b { font-weight: var(--overview-weight); }
+  .overview-mode .lab:not(.layer):not(.tbl):not(.sel) .n { display: none; }
+  .lab b { font-weight: var(--label-weight); }
+  .lab .n { display: block; color: var(--ink-2); font-size: var(--label-detail-size); font-variant-numeric: tabular-nums; }
+  .lab.key { color: var(--key); font-family: var(--mono-font); font-size: var(--key-size); }
+  .lab.crit { color: var(--critical); font-size: var(--key-size); font-weight: 600; }
+  .lab.warn { color: var(--warning-ink); font-size: var(--key-size); font-weight: 600; }
+  .lab.layer { font-size: 12px; color: var(--ink-2); text-align: left; cursor: pointer; }
+  .lab.layer b { color: var(--ink); font-family: var(--heading-font); font-size: var(--layer-size); }
+  .lab.col { font-family: var(--mono-font); font-size: var(--col-size); }
+  .lab.tbl { pointer-events: auto; cursor: default; text-shadow: none; background: var(--surface); border: 1px solid var(--axis); border-radius: var(--card-radius); padding: 6px 10px; max-width: calc(var(--stage-width, 900px) - 32px); overflow: auto; }
+  .lab.tbl table { border-collapse: collapse; font-size: var(--small-size); }
+  .lab.tbl th, .lab.tbl td { text-align: left; padding: 2px 10px 2px 0; border-bottom: 1px solid var(--hair); }
+  .lab.tbl th { font-weight: 650; color: var(--ink-2); }
+  .lab.tbl .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .lab.tbl .more { color: var(--muted); border-bottom: 0; }
+  .lab.card { font-weight: 700; }
+  .lab.hidden { opacity: 0; pointer-events: none; }
+  .lab.sel:not(.crit):not(.warn), .lab.sel:not(.crit):not(.warn) b { color: var(--key); }
+  .lab.sel.crit, .lab.sel.warn { text-decoration: underline; text-underline-offset: 3px; }
+  .panel .difflist { list-style: none; padding: 0; margin: 6px 0 12px; }
+  .difflist li { border-bottom: 1px solid var(--hair); padding: 6px 0; margin: 0; }
+  .difflist .top { display: flex; justify-content: space-between; gap: 10px; }
+  .difflist .n { font-variant-numeric: tabular-nums; font-weight: 650; white-space: nowrap; }
+  .difflist .ex { color: var(--ink-2); font-size: 12px; }
+  .read { display: grid; grid-template-columns: 22px 1fr; gap: 4px 8px; align-items: center; margin: 6px 0 12px; font-size: 13px; }
+  .read i { display: inline-block; width: 18px; border-top: 2px solid var(--key); }
+  .read i.crit { width: 9px; height: 9px; border: 0; background: var(--critical); }
+  .read i.warn { border-top: 2px solid var(--warning); }
+  .read i.map { border-top: 1px solid var(--muted); }
+  .read i.bar3 { width: 9px; height: 14px; border: 1px solid var(--block-edge); background: var(--block); }
+
+  .legend {
+    position: absolute; left: 14px; bottom: 12px; font-size: var(--small-size); color: var(--ink-2);
+    background: color-mix(in srgb, var(--surface) var(--legend-alpha), transparent); padding: var(--legend-padding); border: 1px solid var(--hair); border-radius: var(--legend-radius);
+    display: grid; grid-template-columns: auto 1fr; gap: 3px 8px; align-items: center; max-width: 330px;
+  }
+  .legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--key); }
+  .legend i.crit { width: 9px; height: 9px; border: 0; background: var(--critical); }
+  .legend i.warn { border-top: 2px solid var(--warning); }
+  .legend i.map { border-top: 1px solid var(--muted); }
+  .legend i.bar3 { width: 9px; height: 14px; border: 1px solid var(--block-edge); background: var(--block); }
+  .hint { position: absolute; right: 14px; bottom: 12px; font-size: var(--small-size); color: var(--muted); }
+  .steps {
+    position: absolute; left: 50%; top: 12px; transform: translateX(-50%);
+    display: flex; gap: 4px; align-items: center; background: var(--surface);
+    border: 1px solid var(--axis); border-radius: var(--control-radius); padding: 4px;
+  }
+  .steps[hidden] { display: none; }
+  .steps button { border: 0; background: transparent; width: 30px; height: 28px; border-radius: var(--control-radius); cursor: pointer; font-variant-numeric: tabular-nums; }
+  .steps button[aria-current="step"] { background: var(--ink); color: var(--surface); }
+  .steps .arrow { width: 34px; color: var(--ink-2); }
+
+  /* Focus stays in the stage; leaders keep screen-facing cards tied to their objects. */
+  .back { position: absolute; top: 14px; left: 14px; z-index: 20; }
+  .back[hidden], .pile-tip[hidden] { display: none; }
+  .focus-leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+  .focus-leaders line { stroke: var(--key); stroke-width: 1.25; }
+  .focus-leaders circle { fill: var(--key); }
+  .built-leaders line { stroke: var(--muted); stroke-width: 1; }
+  .built-leaders line.crit { stroke: var(--critical); }
+  .scene-anchor, .result-anchor { pointer-events: none; }
+  .scene-anchor, .focus-mode .result-anchor { z-index: 10 !important; }
+  .scene-card {
+    width: 620px; max-width: calc(var(--stage-width, 900px) - 32px);
+    max-height: calc(var(--stage-height, 800px) - 100px); overflow: auto;
+    padding: var(--card-padding); border: 1px solid var(--axis); border-top: 3px solid var(--key);
+    border-radius: var(--card-radius); background: var(--surface); color: var(--ink);
+    box-shadow: var(--card-shadow); pointer-events: auto; text-align: left;
+    font-size: var(--card-size); line-height: var(--card-leading); white-space: normal;
+  }
+  .scene-card.design-card { width: 380px; }
+  .scene-card.match-card { width: 470px; }
+  .scene-card h3 { font-size: var(--card-heading-size); margin: 0 0 3px; }
+  .scene-card h4 { font-size: 12px; margin: 12px 0 4px; }
+  .scene-card p { margin: 0 0 8px; }
+  .scene-card .caption, .lab.tbl .caption { color: var(--ink-2); font-size: var(--small-size); margin: 4px 0 8px; }
+  .data-scroll { max-width: 100%; overflow: auto; overscroll-behavior: contain; }
+  .scene-card table { border-collapse: collapse; width: 100%; font-size: var(--small-size); }
+  .scene-card th, .scene-card td { border-bottom: 1px solid var(--hair); padding: var(--card-cell-padding); text-align: center; vertical-align: top; }
+  .scene-card th { color: var(--ink-2); font-weight: 600; white-space: nowrap; }
+  .scene-card .cell-text { display: block; min-width: 100px; max-width: 180px; max-height: 3em; overflow: auto; white-space: pre-line; text-align: left; }
+  .scene-card .num { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .scene-card .example-row td, .lab.tbl .trace-column { background: color-mix(in srgb, var(--key) var(--highlight-mix), var(--surface)); }
+  .scene-card .example-row td:first-child { box-shadow: inset 3px 0 var(--key); }
+  .scene-card .not-recorded { color: var(--muted); font-style: italic; }
+  .scene-card ul { padding-left: 18px; margin: 5px 0; }
+  .scene-card .matches { list-style: none; padding: 0; }
+  .matches li { padding: 5px 0; border-bottom: 1px solid var(--hair); }
+  .matches .yes { color: var(--key); }
+  .matches .no { color: var(--critical); }
+  .scene-card code { font-size: var(--small-size); }
+  .lab.tbl.expanded { padding: 12px 14px; border-top: 3px solid var(--key); box-shadow: var(--card-shadow); max-height: calc(var(--stage-height, 800px) * .36); }
+  .lab.tbl.expanded table { font-size: 13px; }
+  .lab.tbl.expanded th, .lab.tbl.expanded td { padding: 5px 9px; }
+  .lab.tbl th button { color: inherit; font: inherit; border: 0; padding: 2px 0; background: none; cursor: pointer; }
+  .lab.tbl th button[aria-pressed="true"] { color: var(--key); }
+  .trace-mode .scene-card { max-height: calc(var(--stage-height, 800px) * .36); }
+  .path-label { background: var(--surface); border: 1px solid var(--key); border-radius: var(--control-radius); padding: 5px 8px; color: var(--key); font-size: 12px; white-space: nowrap; pointer-events: none; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+  .path-label[hidden] { display: none !important; }
+  .trace-mode .path-label { white-space: normal; overflow-wrap: anywhere; text-overflow: clip; }
+  .pile-tip { position: absolute; z-index: 30; pointer-events: none; background: var(--surface); border: 1px solid var(--critical); border-radius: var(--control-radius); padding: 5px 8px; font-size: 12px; }
+  .focus-mode .legend, .focus-mode .hint { display: none; }
+  .compact-focus .scene-card { max-height: calc(var(--stage-height, 800px) * .54); }
+  .compact-focus.trace-mode .scene-card, .compact-focus.trace-mode .lab.tbl.expanded { max-height: calc(var(--stage-height, 800px) * .29); }
+
+  /* panel content */
+  .panel h2 { font-family: var(--heading-font); font-size: var(--heading-size); font-weight: var(--heading-weight); letter-spacing: var(--heading-tracking); line-height: 1.3; margin: 0 0 4px; }
+  .panel .kicker { color: var(--ink-2); font-size: 12.5px; margin: 0 0 14px; }
+  .panel h3 { font-size: 13px; margin: var(--section-gap) 0 6px; }
+  .panel p { margin: 0 0 10px; }
+  .panel ul { margin: 0 0 10px; padding-left: 18px; }
+  .panel li { margin: 0 0 5px; }
+  .panel pre {
+    background: var(--code-bg); border-radius: var(--code-radius); padding: 10px 12px; border-left: 3px solid var(--key);
+    font-size: 11px; line-height: 1.55; overflow-x: auto; margin: 6px 0 12px; white-space: pre;
+  }
+  .panel pre .dim { color: var(--muted); }
+  .panel pre .new { color: var(--key); }
+  .panel code { font-size: 12px; background: var(--code-bg); padding: 0 3px; border-radius: 2px; }
+  .stat { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 6px 0 12px; }
+  .stat dt { font-variant-numeric: tabular-nums; font-weight: 650; text-align: right; }
+  .stat dd { margin: 0; color: var(--ink-2); }
+  .stat dt.crit { color: var(--critical); }
+  table.cols { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 4px 0 12px; }
+  table.cols th, table.cols td { text-align: left; padding: 4px 6px 4px 0; border-bottom: 1px solid var(--hair); vertical-align: top; }
+  table.cols th { font-weight: 650; color: var(--ink-2); font-size: 12px; }
+  table.cols td.c { font-family: var(--mono-font); font-size: 12px; white-space: nowrap; }
+  .tag { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 0 4px; border-radius: 3px; line-height: 16px; margin-right: 4px; }
+  .tag.pk { color: var(--key); border: 1px solid var(--key); }
+  .tag.fk { color: var(--tag-key-ink); background: var(--key); }
+  .tag.copy { color: #0b0b0b; background: var(--warning); }
+  .tag.sale { color: var(--ink-2); border: 1px solid var(--axis); }
+  .tag.crit { color: var(--tag-critical-ink); background: var(--critical); }
+  .note { color: var(--ink-2); font-size: 12.5px; }
+  .flag { border-left: 3px solid var(--critical); padding: 2px 0 2px 10px; margin: 8px 0 12px; }
+  .flag.warn { border-left-color: var(--warning); }
+  .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 6px 0 12px; font-size: 12.5px; }
+  .chain span { border: 1px solid var(--axis); border-radius: 4px; padding: 1px 6px; }
+  .chain em { color: var(--muted); font-style: normal; }
+  .linkbtn { border: 0; background: none; padding: 0; color: var(--key); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+  .res { width: 100%; border-collapse: collapse; font-size: 12px; margin: 6px 0 10px; }
+  .res th, .res td { text-align: left; padding: 3px 8px 3px 0; border-bottom: 1px solid var(--hair); }
+  .res td.num, .res th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .src { color: var(--muted); font-size: var(--small-size); margin-top: 18px; border-top: 1px solid var(--hair); padding-top: 10px; }
+
+  /* table view (accessible twin) */
+  #tableView { padding: 20px; max-width: 1100px; margin: 0 auto; }
+  #tableView[hidden] { display: none; }
+  #tableView h2 { font-size: 18px; margin: 24px 0 8px; }
+  #tableView h2:first-child { margin-top: 4px; }
+  #tableView .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px 28px; }
+  #tableView h3 { font-size: 14px; margin: 10px 0 4px; }
+  #tableView .scene-card { width: 100%; max-width: 100%; max-height: none; box-shadow: none; margin: 12px 0; }
+  #tableView .result-table { overflow: auto; }
+  #tableView .result-table table { width: 100%; border-collapse: collapse; }
+  #tableView .result-table td, #tableView .result-table th { padding: 5px 8px; border-bottom: 1px solid var(--hair); }
+
+  body.tv .layout { display: none; }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .stage { min-height: 62vh; }
+    .panel { border-left: 0; border-top: 1px solid var(--hair); max-height: none; }
+    .bar { padding: 10px 16px; }
+    .legend { display: none; }
+    .hint { display: none; }
+    .scene-card { max-height: calc(var(--stage-height, 800px) * .54); }
+    .trace-mode .scene-card, .trace-mode .lab.tbl.expanded { max-height: calc(var(--stage-height, 800px) * .29); }
+  }
+  .btn:hover, .seg button:not([aria-pressed="true"]):hover {
+    background: color-mix(in srgb, var(--ink) var(--hover-mix), var(--surface));
+  }
+  .lab:not(.tbl):hover { border-color: currentColor; }
+  .lab.layer { background: transparent; border-color: transparent; box-shadow: none; }
+  .lab.tbl { font-family: var(--body-font); letter-spacing: normal; }
+  .hint { bottom: 10px; }
+  .scene-card, .lab.tbl { scrollbar-width: thin; scrollbar-color: var(--axis) transparent; }
+  @media (prefers-reduced-motion: reduce) { .lab { transition: none; } }
+  :root.static .lab { transition: none; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<header class="bar">
+  <div class="title">
+    <h1>The Iowa liquor database in three layers</h1>
+    <p class="sub">Class 3 at-home exercise, extended &middot; SIPAIA 6652 &middot; Dongjae Kang</p>
+  </div>
+  <div class="seg" role="group" aria-label="View">
+    <button type="button" data-view="all" aria-pressed="true">All layers</button>
+    <button type="button" data-view="user" aria-pressed="false">User view</button>
+    <button type="button" data-view="design" aria-pressed="false">Design</button>
+    <button type="button" data-view="built" aria-pressed="false">As built</button>
+  </div>
+  <button type="button" class="btn" id="walkBtn" aria-pressed="false">Walk the exercise</button>
+  <button type="button" class="btn" id="tvBtn" aria-pressed="false">Table view</button>
+  <div class="seg" id="themeSwitch" role="group" aria-label="Color theme">
+    <button type="button" data-theme-choice="dark" aria-pressed="true">Dark</button>
+    <button type="button" data-theme-choice="light" aria-pressed="false">Light</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="stage" id="stage" aria-label="Three-dimensional view of the database layers">
+    <div class="labels" id="labels"></div>
+    <svg class="focus-leaders" id="focusLeaders" aria-hidden="true"></svg>
+    <svg class="focus-leaders built-leaders" id="builtLeaders" aria-hidden="true"></svg>
+    <button type="button" class="btn back" id="backBtn" hidden aria-label="Back to previous view">&larr; Back <span class="note">Esc</span></button>
+    <div class="pile-tip" id="pileTip" role="tooltip" hidden>1 cube is about 100 rows</div>
+    <nav class="steps" id="steps" hidden aria-label="Exercise steps"></nav>
+    <div class="legend" id="legend" aria-label="Legend">
+      <i class="bar3"></i><span>Block height = rows (log scale), width = columns</span>
+      <i></i><span>Join key</span>
+      <i class="crit"></i><span>Sales rows with no match (1 cube &asymp; 100 rows)</span>
+      <i class="warn"></i><span>Product facts copied into sales</span>
+      <i class="map"></i><span>Mapping between layers</span>
+    </div>
+    <div class="hint">Drag to rotate &middot; scroll to zoom &middot; click a table, a line or a cube pile</div>
+  </section>
+  <aside class="panel" id="panel" aria-live="polite"></aside>
+</main>
+
+<section id="tableView" hidden aria-label="Table view"></section>
+
+<script id="data" type="application/json">{"source":"local PostgreSQL copy of the four CourseWorks CSV files (iowa_local)","tables":{"sales":{"rows":3049913,"columns":[{"name":"date","type":"timestamp without time zone"},{"name":"convenience_store","type":"text"},{"name":"store","type":"integer"},{"name":"county_number","type":"text"},{"name":"county","type":"text"},{"name":"category","type":"text"},{"name":"category_name","type":"text"},{"name":"vendor_no","type":"text"},{"name":"vendor","type":"text"},{"name":"item","type":"integer"},{"name":"description","type":"text"},{"name":"pack","type":"integer"},{"name":"liter_size","type":"integer"},{"name":"state_btl_cost","type":"money"},{"name":"btl_price","type":"money"},{"name":"bottle_qty","type":"integer"},{"name":"total","type":"numeric"}]},"stores":{"rows":1973,"columns":[{"name":"store","type":"integer"},{"name":"name","type":"text"},{"name":"store_status","type":"text"},{"name":"store_address","type":"text"},{"name":"address_info","type":"text"}]},"products":{"rows":9977,"columns":[{"name":"item_no","type":"integer"},{"name":"category_name","type":"text"},{"name":"item_description","type":"text"},{"name":"vendor","type":"integer"},{"name":"vendor_name","type":"text"},{"name":"bottle_size","type":"integer"},{"name":"pack","type":"integer"},{"name":"inner_pack","type":"integer"},{"name":"age","type":"text"},{"name":"proof","type":"text"},{"name":"list_date","type":"timestamp without time zone"},{"name":"upc","type":"text"},{"name":"scc","type":"text"},{"name":"bottle_price","type":"money"},{"name":"shelf_price","type":"numeric"},{"name":"case_cost","type":"numeric"}]},"counties":{"rows":99,"columns":[{"name":"county","type":"text"},{"name":"population","type":"integer"}]}},"constraints":[{"table":"products","def":"PRIMARY KEY (item_no)"},{"table":"stores","def":"PRIMARY KEY (store)"}],"keys":{"counties":{"rows":99,"distinct":99},"stores":{"rows":1973,"distinct":1973},"products":{"rows":9977,"distinct":9977}},"samples":{"sales":[{"date":"2014-01-02T00:00:00","convenience_store":null,"store":2106,"county_number":"7","county":"Black Hawk","category":"1012200","category_name":"SCOTCH WHISKIES","vendor_no":"55","vendor":"Sazerac North America","item":8827,"description":"Lauder's","pack":12,"liter_size":1000,"state_btl_cost":"$6.14","btl_price":"$9.21","bottle_qty":12,"total":110.52},{"date":"2014-01-02T00:00:00","convenience_store":null,"store":2106,"county_number":"7","county":"Black Hawk","category":"1012200","category_name":"SCOTCH WHISKIES","vendor_no":"55","vendor":"Sazerac North America","item":8827,"description":"Lauder's","pack":12,"liter_size":1000,"state_btl_cost":"$6.14","btl_price":"$9.21","bottle_qty":12,"total":110.52},{"date":"2014-01-02T00:00:00","convenience_store":null,"store":2106,"county_number":"7","county":"Black Hawk","category":"1012100","category_name":"CANADIAN WHISKIES","vendor_no":"260","vendor":"Diageo Americas","item":11297,"description":"Crown Royal Canadian Whisky","pack":12,"liter_size":1000,"state_btl_cost":"$18.25","btl_price":"$27.37","bottle_qty":12,"total":328.44}],"stores":[{"store":2106,"name":"Hillstreet News and Tobacco","store_status":"A","store_address":"2217 College\nCedar Falls, IA 506130000\n(42.51716928600007, -92.45583783899997)","address_info":null},{"store":2112,"name":"Mike's Liquors","store_status":"I","store_address":"407 Sharp St.\nGlenwood, IA 515340000\n(41.04631266100006, -95.74218014299998)","address_info":null},{"store":2113,"name":"Jamboree Foods","store_status":"A","store_address":"1119 Market St. Box 71\nGowrie, IA 505430000\n(42.280542454000056, -94.28941088599998)","address_info":null}],"products":[{"item_no":185,"category_name":"DECANTERS & SPECIALTY PACKAGES","item_description":"Bookers Bourbon W/leather Cigar Case","vendor":65,"vendor_name":"Jim Beam Brands","bottle_size":750,"pack":6,"inner_pack":1,"age":null,"proof":"125","list_date":"1997-10-01T00:00:00","upc":null,"scc":null,"bottle_price":"$26.79","shelf_price":40.19,"case_cost":160.76},{"item_no":350,"category_name":"DECANTERS & SPECIALTY PACKAGES","item_description":"Evan Williams Single Barrel Gift Set","vendor":259,"vendor_name":"Heaven Hill Distilleries Inc.","bottle_size":750,"pack":6,"inner_pack":1,"age":null,"proof":"86","list_date":"1996-09-01T00:00:00","upc":null,"scc":null,"bottle_price":"$13.74","shelf_price":20.61,"case_cost":82.45},{"item_no":351,"category_name":"DECANTERS & SPECIALTY PACKAGES","item_description":"Evan Williams Sng Bbl W/barrel Flask","vendor":259,"vendor_name":"Heaven Hill Distilleries Inc.","bottle_size":750,"pack":6,"inner_pack":1,"age":null,"proof":"87","list_date":"2010-07-01T00:00:00","upc":null,"scc":null,"bottle_price":"$14.24","shelf_price":21.36,"case_cost":85.45}],"counties":[{"county":"Adair","population":7682},{"county":"Adams","population":4029},{"county":"Allamakee","population":14330}]},"joins":{"store":{"unmatched_rows":6459,"unmatched_keys":31,"parents_never_used":652},"item":{"unmatched_rows":1120,"unmatched_keys":88,"parents_never_used":6350},"county":{"unmatched_rows":1719,"null_rows":1719,"parents_never_used":0},"all_inner_kept":3040632},"design":{"vendors":271,"categories":69,"stores_in_sales":1352,"county_code_for_blank":"0","date_min":"2014-01-02","date_max":"2015-02-26","sales_total":392293023.61},"multi_county_stores":[{"store":3592,"counties":["Hardin","Webster"],"rows":4481},{"store":4963,"counties":["Cedar","Muscatine"],"rows":4087},{"store":3950,"counties":["Iowa","Marshall"],"rows":2094},{"store":4326,"counties":["Cedar","Hamilton"],"rows":830},{"store":5080,"counties":["Cedar","Clay"],"rows":379},{"store":4996,"counties":["Dubuque","Emmet"],"rows":237},{"store":5085,"counties":["Black Hawk","Cedar"],"rows":205},{"store":5088,"counties":["Cedar","Sioux"],"rows":88}],"copies":[{"sales_col":"category_name","products_col":"category_name","differs":2285,"compared":3048793,"examples":[{"in_sales":"DECANTERS & SPECIALTY PACKAGES","in_products":"MISC. IMPORTED CORDIALS & LIQUEURS","rows":718},{"in_sales":"IMPORTED GRAPE BRANDIES","in_products":"DECANTERS & SPECIALTY PACKAGES","rows":286},{"in_sales":"SCOTCH WHISKIES","in_products":"SINGLE MALT SCOTCH","rows":184}]},{"sales_col":"vendor_no","products_col":"vendor","differs":34896,"compared":3048793,"examples":[{"in_sales":"350","in_products":"434","rows":16546},{"in_sales":"10","in_products":"305","rows":8572},{"in_sales":"461","in_products":"65","rows":3524}]},{"sales_col":"vendor","products_col":"vendor_name","differs":1141967,"compared":3048793,"examples":[{"in_sales":"Luxco-St Louis","in_products":"Luxco-st Louis","rows":278401},{"in_sales":"Pernod Ricard USA/Austin Nichols","in_products":"Pernod Ricard Usa/austin Nichols","rows":192592},{"in_sales":"Brown-Forman Corporation","in_products":"Brown-forman Corporation","rows":139106}]},{"sales_col":"description","products_col":"item_description","differs":59953,"compared":3048793,"examples":[{"in_sales":"Five O'clock","in_products":"Five O'clock Vodka","rows":31836},{"in_sales":"Five O'clock PET","in_products":"Five O'clock PET Vodka","rows":5565},{"in_sales":"Five O'clock","in_products":"Five O'clock Gin","rows":4145}]},{"sales_col":"pack","products_col":"pack","differs":3275,"compared":3048793,"examples":[{"in_sales":"10","in_products":"12","rows":1402},{"in_sales":"12","in_products":"24","rows":1236},{"in_sales":"44","in_products":"48","rows":264}]},{"sales_col":"liter_size","products_col":"bottle_size","differs":679,"compared":3048793,"examples":[{"in_sales":"100","in_products":"1200","rows":204},{"in_sales":"500","in_products":"600","rows":176},{"in_sales":"600","in_products":"500","rows":128}]},{"sales_col":"state_btl_cost","products_col":"bottle_price","differs":553599,"compared":3048793,"examples":[{"in_sales":"$6.50","in_products":"$6.25","rows":26607},{"in_sales":"$10.45","in_products":"$9.70","rows":21701},{"in_sales":"$8.75","in_products":"$9.00","rows":21161}]},{"sales_col":"btl_price","products_col":"shelf_price","differs":881969,"compared":3048793,"examples":[{"in_sales":"12.37","in_products":"12.38","rows":29933},{"in_sales":"7.84","in_products":"7.85","rows":17909},{"in_sales":"9.74","in_products":"9.50","rows":16429}]}],"copies_loose":{"vendor_ignoring_case":141682,"description_ignoring_case_and_punctuation":47888},"join_examples":{"store":{"unmatched":[{"key":2670,"rows":1551},{"key":5102,"rows":717},{"key":2671,"rows":453}],"matched":[{"key":2633,"parent_label":"Hy-vee #3 / Bdi / Des Moines","rows":29465},{"key":4829,"parent_label":"Central City 2","rows":25827},{"key":2512,"parent_label":"Hy-vee Wine and Spirits / Iowa City","rows":24038}]},"item":{"unmatched":[{"key":69715,"sales_label":"Dr. McGillicuddy's Peach","rows":101},{"key":43352,"sales_label":"Captain Morgan Pineapple","rows":77},{"key":43314,"sales_label":"Captain Morgan Grapefruit","rows":75}],"matched":[{"key":11788,"parent_label":"Black Velvet","rows":31904},{"key":36308,"parent_label":"Hawkeye Vodka","rows":31105},{"key":35918,"parent_label":"Five O'clock Vodka","rows":23148}]},"county":{"unmatched":[{"key":"(blank)","code":"0","rows":1719}],"matched":[{"key":"Polk","parent_label":430640,"rows":561746},{"key":"Linn","parent_label":211226,"rows":251270},{"key":"Scott","parent_label":165224,"rows":188320}]}},"samples5":{"sales":[{"date":"2014-01-02","store":2106,"county":"Black Hawk","item":8827,"description":"Lauder's","bottle_qty":12,"total":110.52},{"date":"2014-01-02","store":2106,"county":"Black Hawk","item":8827,"description":"Lauder's","bottle_qty":12,"total":110.52},{"date":"2014-01-02","store":2106,"county":"Black Hawk","item":11297,"description":"Crown Royal Canadian Whisky","bottle_qty":12,"total":328.44},{"date":"2014-01-02","store":2106,"county":"Black Hawk","item":11297,"description":"Crown Royal Canadian Whisky","bottle_qty":12,"total":328.44},{"date":"2014-01-02","store":2106,"county":"Black Hawk","item":11776,"description":"Black Velvet","bottle_qty":12,"total":94.08}],"stores":[{"store":2106,"name":"Hillstreet News and Tobacco","store_status":"A","store_address":"2217 College\nCedar Falls, IA 506130000\n(42.51716928600007, -92.45583783899997)","address_info":null},{"store":2112,"name":"Mike's Liquors","store_status":"I","store_address":"407 Sharp St.\nGlenwood, IA 515340000\n(41.04631266100006, -95.74218014299998)","address_info":null},{"store":2113,"name":"Jamboree Foods","store_status":"A","store_address":"1119 Market St. Box 71\nGowrie, IA 505430000\n(42.280542454000056, -94.28941088599998)","address_info":null},{"store":2119,"name":"Manly Liquor Store","store_status":"I","store_address":"133 East Main\nManly, IA 504560000\n(43.286863132000065, -93.20244674199995)","address_info":null},{"store":2130,"name":"Sycamore Convenience","store_status":"A","store_address":"617 Sycamore\nWaterloo, IA 507030000\n(42.49783399700004, -92.33531492199995)","address_info":null}],"products":[{"item_no":185,"item_description":"Bookers Bourbon W/leather Cigar Case","category_name":"DECANTERS & SPECIALTY PACKAGES","vendor_name":"Jim Beam Brands","bottle_size":750,"case_cost":160.76},{"item_no":350,"item_description":"Evan Williams Single Barrel Gift Set","category_name":"DECANTERS & SPECIALTY PACKAGES","vendor_name":"Heaven Hill Distilleries Inc.","bottle_size":750,"case_cost":82.45},{"item_no":351,"item_description":"Evan Williams Sng Bbl W/barrel Flask","category_name":"DECANTERS & SPECIALTY PACKAGES","vendor_name":"Heaven Hill Distilleries Inc.","bottle_size":750,"case_cost":85.45},{"item_no":380,"item_description":"Bourbon Heritage Sampler Pack","category_name":"STRAIGHT BOURBON WHISKIES","vendor_name":"Diageo Americas","bottle_size":251,"case_cost":121.91},{"item_no":383,"item_description":"Bourbon Heritage Multi-Pack","category_name":"STRAIGHT BOURBON WHISKIES","vendor_name":"Diageo Americas","bottle_size":750,"case_cost":245.91}],"counties":[{"county":"Polk","population":430640},{"county":"Linn","population":211226},{"county":"Scott","population":165224},{"county":"Black Hawk","population":131090},{"county":"Johnson","population":130882}]},"exercise":{"query":"SELECT d.county, b.store, b.name, a.total, c.case_cost\nFROM sales a\nINNER JOIN stores   b ON a.store  = b.store\nINNER JOIN products c ON a.item   = c.item_no\nINNER JOIN counties d ON a.county = d.county\nLIMIT 1000;","rows":1000,"first":[{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","total":113.28,"case_cost":75.48,"date":"2014-11-04","item":63355,"item_description":"Skinnygirl Margarita","bottle_qty":12,"population":430640,"store_address":"2135 Se Delaware Ave\nAnkeny, IA 500210000\n(41.70846910100005, -93.58104333599994)","store_status":"A"},{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","total":238.56,"case_cost":158.89,"date":"2014-11-04","item":68036,"item_description":"Bailey's Original Irish Cream","bottle_qty":12,"population":430640,"store_address":"2135 Se Delaware Ave\nAnkeny, IA 500210000\n(41.70846910100005, -93.58104333599994)","store_status":"A"},{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","total":156.12,"case_cost":103.95,"date":"2014-11-04","item":69636,"item_description":"Dr. Mcgillicuddy's Cherry Schnapps","bottle_qty":12,"population":430640,"store_address":"2135 Se Delaware Ave\nAnkeny, IA 500210000\n(41.70846910100005, -93.58104333599994)","store_status":"A"},{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","total":108.0,"case_cost":71.95,"date":"2014-11-04","item":73986,"item_description":"Di Amore Amaretto","bottle_qty":12,"population":430640,"store_address":"2135 Se Delaware Ave\nAnkeny, IA 500210000\n(41.70846910100005, -93.58104333599994)","store_status":"A"},{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","total":180.0,"case_cost":120.0,"date":"2014-11-04","item":75214,"item_description":"Kinky Blue","bottle_qty":12,"population":430640,"store_address":"2135 Se Delaware Ave\nAnkeny, IA 500210000\n(41.70846910100005, -93.58104333599994)","store_status":"A"}],"slide_first":[{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","item":63355,"case_cost":75.48,"total":113.28},{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","item":68036,"case_cost":158.89,"total":238.56},{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","item":69636,"case_cost":103.95,"total":156.12}]}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+const { preset: S, effects: FX, applyPalette } = window.EXPLORER_STYLE;
+const G = S.geometry;
+const D = JSON.parse(document.getElementById('data').textContent);
+const fmt = (n, options) => Number(n).toLocaleString('en-US', options);
+const pct = (a, b) => (100 * a / b).toFixed(1) + '%';
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const hashParams = new URLSearchParams(location.hash.slice(1));
+const STATIC = hashParams.get('static') === '1';
+document.documentElement.classList.toggle('static', STATIC);
+
+/* ------------------------------------------------------------------ facts */
+const T = D.tables;
+const J = D.joins;
+const SALES = T.sales.rows;
+const dropped = SALES - J.all_inner_kept;
+const copyBy = Object.fromEntries(D.copies.map(c => [c.sales_col, c]));
+const multi = D.multi_county_stores;
+const SRC = `<p class="src">Numbers: ${esc(D.source)}, measured 17 Nov 2026. Sales dates ${esc(D.design.date_min)} to ${esc(D.design.date_max)}. Constraints describe this copy; the class server was not checked.</p>`;
+
+const ROLE = {
+  sales: {
+    date: ['attr', 'Date of the sale'],
+    convenience_store: ['attr', 'Store type flag'],
+    store: ['fk', 'stores.store'],
+    county_number: ['copy', 'County code (0 when the county is blank)'],
+    county: ['fk', 'counties.county'],
+    category: ['copy', 'Category code (no matching column in products)'],
+    category_name: ['copy', 'products.category_name'],
+    vendor_no: ['copy', 'products.vendor'],
+    vendor: ['copy', 'products.vendor_name'],
+    item: ['fk', 'products.item_no'],
+    description: ['copy', 'products.item_description'],
+    pack: ['copy', 'products.pack'],
+    liter_size: ['copy', 'products.bottle_size'],
+    state_btl_cost: ['sale', 'Price at the time of sale (compare products.bottle_price)'],
+    btl_price: ['sale', 'Price at the time of sale (compare products.shelf_price)'],
+    bottle_qty: ['attr', 'Bottles sold'],
+    total: ['attr', 'Sale amount (shown in the result)'],
+  },
+  stores: { store: ['pk', ''], name: ['attr', 'Shown in the result'] },
+  products: { item_no: ['pk', ''], case_cost: ['attr', 'Shown in the result'] },
+  counties: { county: ['pk*', 'Unique in all 99 rows, but no PRIMARY KEY constraint in this copy'] },
+};
+
+/* --------------------------------------------------------------- layout */
+const LAYER_Y = G.layers;
+const PLANE = G.plane;
+const PHYS = {
+  sales:    { x: 0,   z: 0 },
+  stores:   { x: -13, z: -4 },
+  products: { x: 13,  z: -4 },
+  counties: { x: -6,  z: 8 },
+};
+for (const [k, p] of Object.entries(PHYS)) {
+  p.rows = T[k].rows; p.cols = T[k].columns.length;
+  p.h = Math.log10(p.rows) * G.heightScale;
+  p.w = G.widthBase + p.cols * G.widthPerColumn;
+  p.d = G.blockDepth;
+}
+const DES = {
+  Sale:     { x: 0,   z: 0,  n: SALES, about: 'one row per sale line' },
+  Store:    { x: -13, z: -4, n: T.stores.rows, about: 'one row per store' },
+  County:   { x: -13, z: 6,  n: T.counties.rows, about: 'one row per county' },
+  Product:  { x: 13,  z: -4, n: T.products.rows, about: 'one row per product' },
+  Vendor:   { x: 17,  z: 6,  n: D.design.vendors, about: 'one row per vendor' },
+  Category: { x: 8,   z: 7,  n: D.design.categories, about: 'one row per category' },
+};
+const DES_EDGES = [
+  ['County', 'Store', 'one county, many stores'],
+  ['Store', 'Sale', 'one store, many sales'],
+  ['Product', 'Sale', 'one product, many sales'],
+  ['Vendor', 'Product', 'one vendor, many products'],
+  ['Category', 'Product', 'one category, many products'],
+];
+const USER_COLS = [
+  { name: 'county', entity: 'County', table: 'counties', via: 'sales.county = counties.county' },
+  { name: 'store', entity: 'Store', table: 'stores', via: 'sales.store = stores.store' },
+  { name: 'name', entity: 'Store', table: 'stores', via: 'sales.store = stores.store' },
+  { name: 'total', entity: 'Sale', table: 'sales', via: 'the primary table itself' },
+  { name: 'case_cost', entity: 'Product', table: 'products', via: 'sales.item = products.item_no' },
+];
+const JOINS = {
+  store:  { parent: 'stores',   on: 'a.store = b.store',   label: 'store = store',   sameName: true,  n: 1 },
+  item:   { parent: 'products', on: 'a.item = c.item_no',  label: 'item = item_no',  sameName: false, n: 2 },
+  county: { parent: 'counties', on: 'a.county = d.county', label: 'county = county', sameName: true,  n: 3 },
+};
+const DESIGN_MAP = {
+  Sale: { sales: ['date', 'store', 'item', 'bottle_qty', 'state_btl_cost', 'btl_price', 'total'] },
+  Store: { stores: ['store', 'name', 'store_address', 'store_status'], sales: ['county'] },
+  County: { counties: ['county', 'population'], sales: ['county', 'county_number'] },
+  Product: { products: ['item_no', 'item_description', 'pack', 'bottle_size', 'case_cost'], sales: ['item'] },
+  Vendor: { products: ['vendor', 'vendor_name'], sales: ['vendor_no', 'vendor'] },
+  Category: { products: ['category_name'], sales: ['category', 'category_name'] },
+};
+
+function sampleTable(t, rows, columns, activeIndex = -1, source = 'samples5') {
+  return `<div class="data-scroll" tabindex="0" aria-label="${t} rows"><table data-table="${t}" data-source="${source}"><thead><tr>${columns.map(k => `<th>${tagFor(ROLE[t]?.[k]?.[0])}${esc(k)}</th>`).join('')}</tr></thead><tbody>${rows.map((row, i) => `<tr class="${i === activeIndex ? 'example-row' : ''}">${columns.map(k => {
+    const v = row[k], text = cellValue(k, v);
+    return `<td class="${typeof v === 'number' ? 'num' : ''} ${v === undefined ? 'not-recorded' : ''}" data-column="${k}"><span${typeof v === 'string' && v.length > 18 ? ' class="cell-text"' : ''} title="${esc(text)}">${esc(text)}</span></td>`;
+  }).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function tableCard(t, traceColumn) {
+  const rows = D.samples5[t], columns = Object.keys(rows[0]);
+  let example = '', activeIndex = -1;
+  if (traceColumn) {
+    const r = D.exercise.first[0];
+    const key = { sales: 'total', stores: 'store', products: 'item_no', counties: 'county' }[t];
+    const record = {
+      sales: { date: r.date, store: r.store, county: r.county, item: r.item, bottle_qty: r.bottle_qty, total: r.total },
+      stores: { store: r.store, name: r.name, store_status: r.store_status, store_address: r.store_address },
+      products: { item_no: r.item, item_description: r.item_description, case_cost: r.case_cost },
+      counties: { county: r.county, population: r.population },
+    }[t];
+    // Sales has no row identifier: compare every recorded sale field, not its amount alone.
+    activeIndex = rows.findIndex(row => t === 'sales' ? Object.entries(record).every(([k, v]) => row[k] === v) : row[key] === record[key]);
+    if (activeIndex < 0) example = `<h4>Row behind the result</h4>${sampleTable(t, [record], columns, 0, 'exercise.first')}<p class="caption">Recorded fields from the result example. Other fields were not sampled.</p>`;
+  }
+  const samples = sampleTable(t, rows, columns, activeIndex);
+  const extra = T[t].columns.length - columns.length;
+  return `<h3>${t}</h3><p class="caption">${traceColumn ? `${esc(traceColumn)} from the first result row` : `${fmt(rows.length)} sampled rows`}</p>${example}${example ? `<details><summary>${fmt(rows.length)} sampled rows</summary>${samples}</details>` : samples}${extra ? `<p class="caption">+${fmt(extra)} more columns in the side panel</p>` : ''}`;
+}
+function designCard(k) {
+  const mappings = Object.entries(DESIGN_MAP[k]).map(([t, cols]) => `<li><button class="linkbtn" data-go="t:${t}">${t}</button>: ${cols.map(c => `<code>${esc(c)}</code>`).join(', ')}</li>`).join('');
+  const note = k === 'Store' ? 'The design assigns a county to each store. As built, county is recorded on sales.' : ['Vendor', 'Category'].includes(k) ? `No separate ${k.toLowerCase()} table is stored.` : 'Stored columns keep the link to the design.';
+  return `<h3>${k}</h3><p>${esc(DES[k].about)} &middot; ${fmt(DES[k].n)}</p><h4>Stored columns</h4><ul>${mappings}</ul><p class="caption">${note}</p>`;
+}
+function matchCard(k) {
+  const j = JOINS[k], examples = D.join_examples[k];
+  const keyLabel = row => k === 'county' && row.code !== undefined ? `blank county (code ${esc(row.code)})` : `${k} ${esc(cellValue(k, row.key))}`;
+  const matched = examples.matched.map(row => `<li><span class="yes" aria-label="Matched">✓</span> ${keyLabel(row)} &middot; ${k === 'county' ? `population ${fmt(row.parent_label)}` : esc(row.parent_label)}<br><span class="caption">${fmt(row.rows)} sales rows</span></li>`).join('');
+  const unmatched = examples.unmatched.map(row => `<li data-unmatched-key="${esc(row.key)}"><span class="no" aria-label="No match">×</span> ${keyLabel(row)} &middot; ${fmt(row.rows)} sales rows &middot; not in ${j.parent}${row.sales_label ? `<br><span class="caption">${esc(row.sales_label)}</span>` : ''}</li>`).join('');
+  return `<h3>sales &rarr; ${j.parent}</h3><p><code>${esc(j.on)}</code></p><h4>${fmt(SALES - J[k].unmatched_rows)} matched</h4><ul class="matches">${matched}</ul><h4>${fmt(J[k].unmatched_rows)} sales rows with no match</h4><ul class="matches">${unmatched}</ul><p class="caption">The red branch stops before ${j.parent}. 1 cube is about 100 rows.</p>`;
+}
+
+/* --------------------------------------------------------------- scene */
+const stage = document.getElementById('stage');
+const labelsEl = document.getElementById('labels');
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+} catch (e) {
+  renderer = null;
+}
+const panel = document.getElementById('panel');
+
+if (!renderer) {
+  document.body.classList.add('tv');
+  renderTableView();
+  document.getElementById('tableView').hidden = false;
+  document.getElementById('tableView').insertAdjacentHTML('afterbegin', '<p class="note">This browser could not start 3D graphics, so the same content is shown as tables.</p>');
+  throw new Error('no webgl');
+}
+
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, S.fx.pixelRatio));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = S.lights.exposure;
+renderer.shadowMap.enabled = FX.shadows;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+// Static geometry only needs new depth maps when visibility or selection changes.
+renderer.shadowMap.autoUpdate = false;
+stage.prepend(renderer.domElement);
+const labelRenderer = new CSS2DRenderer({ element: labelsEl });
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(S.camera.fov, 1, 0.1, 400);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = !reduceMotion && !STATIC;
+controls.dampingFactor = 0.08;
+controls.minDistance = 12;
+controls.maxDistance = 120;
+controls.maxPolarAngle = Math.PI * 0.49;
+
+scene.add(new THREE.HemisphereLight(S.lights.sky, S.lights.ground, S.lights.hemisphere));
+const shadowLights = [];
+for (const role of ['key', 'fill', 'rim']) {
+  const rig = S.lights[role];
+  // Split the same key-light energy across three tightly fitted plate maps.
+  // One shadowed contribution per plate keeps the shadow quiet.
+  const layers = role === 'key' && FX.shadows ? Object.keys(LAYER_Y) : [null];
+  for (const layer of layers) {
+    const light = new THREE.DirectionalLight(rig.color, rig.intensity / layers.length);
+    light.target.position.set(0, layer ? LAYER_Y[layer] : 0, 0);
+    light.position.copy(light.target.position).add(new THREE.Vector3(...rig.position));
+    scene.add(light, light.target);
+    if (layer) {
+      light.name = 'key-' + layer;
+      light.castShadow = true;
+      light.shadow.camera.userData.layer = layer;
+      light.shadow.mapSize.setScalar(Math.min(S.fx.shadowMapSize, renderer.capabilities.maxTextureSize));
+      light.shadow.bias = S.fx.shadowBias;
+      light.shadow.normalBias = S.fx.shadowNormalBias;
+      light.shadow.autoUpdate = false;
+      shadowLights.push(light);
+    }
+  }
+}
+function invalidateShadows() {
+  if (!FX.shadows) return;
+  renderer.shadowMap.needsUpdate = true;
+  for (const light of shadowLights) light.shadow.needsUpdate = true;
+}
+
+let environmentTarget = null;
+if (FX.environment) {
+  let room, pmrem;
+  try {
+    const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js');
+    room = new RoomEnvironment(renderer);
+    pmrem = new THREE.PMREMGenerator(renderer);
+    environmentTarget = pmrem.fromScene(room, S.fx.envBlur);
+    scene.environment = environmentTarget.texture;
+    // The stage remains a solid colour; the environment only lights materials.
+  } catch (error) {
+    console.warn('Environment light unavailable; keeping direct light and contact shadows.', error);
+  } finally {
+    room?.dispose();
+    pmrem?.dispose();
+  }
+}
+
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const C = {};
+const themed = []; // [material, prop, token]
+function mat(kind, token, opts = {}) {
+  let m;
+  if (kind === 'std') {
+    const signal = ['--key', '--critical', '--warning'].includes(token);
+    m = new THREE.MeshStandardMaterial({ ...(signal ? S.materials.signal : S.materials.body),
+      envMapIntensity: scene.environment ? S.fx.envIntensity * (signal ? S.fx.signalEnvScale : 1) : 0, ...opts });
+  }
+  else if (kind === 'basic') m = new THREE.MeshBasicMaterial(opts);
+  else if (kind === 'line') m = new THREE.LineBasicMaterial(opts);
+  else if (kind === 'dash') m = new THREE.LineDashedMaterial({ dashSize: S.materials.dashSize, gapSize: S.materials.gapSize, ...opts });
+  m.userData.baseOpacity = m.opacity;
+  m.color.set(css(token));
+  themed.push([m, 'color', token]);
+  return m;
+}
+function applyTheme() {
+  applyPalette();
+  for (const [m, prop, token] of themed) m[prop].set(css(token));
+  scene.background = new THREE.Color(css('--stage'));
+  document.querySelectorAll('[data-theme-choice]').forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.themeChoice === document.documentElement.dataset.theme));
+  });
+}
+
+const pickables = [];
+const layerGroups = { built: new THREE.Group(), design: new THREE.Group(), user: new THREE.Group() };
+for (const [k, g] of Object.entries(layerGroups)) { g.position.y = LAYER_Y[k]; scene.add(g); }
+const overlay = new THREE.Group(); // built-layer problem markers
+layerGroups.built.add(overlay);
+const mappingGroup = new THREE.Group();
+scene.add(mappingGroup);
+const labels = []; // {obj, layer, kind}
+function own(o, ...ids) { o.userData.context = ids; return o; }
+
+function label(html, cls, pos, parent, layer, sel) {
+  const el = document.createElement('button');
+  el.type = 'button';
+  el.className = 'lab ' + (cls || '');
+  el.innerHTML = html;
+  // Counts stay available to assistive technology when overview chips show names only.
+  el.setAttribute('aria-label', [...el.childNodes].map(node => node.textContent.trim()).filter(Boolean).join(' '));
+  el.title = el.getAttribute('aria-label');
+  if (sel) {
+    el.dataset.sel = sel;
+    el.addEventListener('click', ev => { ev.stopPropagation(); select(sel); });
+  } else {
+    el.tabIndex = -1;
+  }
+  const o = new CSS2DObject(el);
+  o.position.copy(pos);
+  parent.add(o);
+  labels.push({ o, el, layer, cls: cls || '' });
+  return o;
+}
+
+function rod(a, b, radius, material) {
+  const dir = new THREE.Vector3().subVectors(b, a);
+  const len = dir.length();
+  const geo = new THREE.CylinderGeometry(radius, radius, len, G.rodSegments, 1, false);
+  const m = new THREE.Mesh(geo, material);
+  m.position.copy(a).addScaledVector(dir, 0.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
+  return m;
+}
+const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+
+
+function modelBox(w, h, d, radius, segments = G.bevelSegments) {
+  return new RoundedBoxGeometry(w, h, d, segments, radius);
+}
+// Two quiet perimeter seams follow the rounded walls instead of wireframe faces.
+function modelOutline(w, h, d, radius) {
+  const points = [];
+  for (const y of [-h / 2 + radius, h / 2 - radius]) {
+    const loop = [];
+    for (let corner = 0; corner < 4; corner++) {
+      const angle = corner * Math.PI / 2;
+      const cx = (corner === 0 || corner === 3 ? 1 : -1) * (w / 2 - radius);
+      const cz = (corner < 2 ? 1 : -1) * (d / 2 - radius);
+      for (let i = 0; i <= G.outlineSegments; i++) {
+        const t = angle + i / G.outlineSegments * Math.PI / 2;
+        loop.push(new THREE.Vector3(cx + Math.cos(t) * radius, y, cz + Math.sin(t) * radius));
+      }
+    }
+    loop.forEach((point, i) => points.push(point, loop[(i + 1) % loop.length]));
+  }
+  return new THREE.BufferGeometry().setFromPoints(points);
+}
+const contactTexture = (() => {
+  if (!FX.contact) return null;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = S.fx.textureSize;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  const r = canvas.width / 2;
+  const gradient = ctx.createRadialGradient(r, r, 0, r, r, r);
+  for (const [stop, alpha] of S.fx.shadowStops) gradient.addColorStop(stop, `rgba(255, 255, 255, ${alpha})`);
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  return new THREE.CanvasTexture(canvas);
+})();
+function contactShadow(parent, x, z, w, d, ids = []) {
+  if (!contactTexture) return;
+  const mesh = own(new THREE.Mesh(
+    new THREE.PlaneGeometry(w * S.fx.shadowSpread, d * S.fx.shadowSpread),
+    mat('basic', '--shadow', { map: contactTexture, transparent: true, opacity: S.fx.shadowOpacity * (FX.shadows ? S.fx.fullContactScale : 1), depthWrite: false, toneMapped: false })
+  ), ...ids);
+  mesh.userData.contactShadow = true;
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.set(x, S.fx.shadowY, z);
+  parent.add(mesh);
+}
+
+/* planes */
+const planeMeta = {
+  user: ['User view', 'external level: what one user sees'],
+  design: ['Design', 'conceptual level: entities and relationships'],
+  built: ['As built', 'the four stored tables in PostgreSQL'],
+};
+const planeMats = {};
+for (const k of Object.keys(layerGroups)) {
+  const { roughness, metalness, opacity } = S.materials.plate;
+  const pm = mat('std', '--plane', { roughness, metalness, transparent: true, opacity, depthWrite: false });
+  planeMats[k] = pm;
+  // The top stays at y = 0, so stored heights and all link endpoints retain their meaning.
+  const plane = new THREE.Mesh(modelBox(PLANE.w, G.plateThickness, PLANE.d, G.plateRadius), pm);
+  plane.userData.plate = true;
+  plane.receiveShadow = FX.shadows;
+  plane.position.y = -G.plateThickness / 2;
+  layerGroups[k].add(plane);
+  const edge = new THREE.LineSegments(modelOutline(PLANE.w, G.plateThickness, PLANE.d, G.plateRadius),
+    mat('line', '--axis', { transparent: true, opacity: S.materials.plateEdgeOpacity }));
+  edge.position.copy(plane.position);
+  layerGroups[k].add(edge);
+  label(`<b>${planeMeta[k][0]}</b><br>${planeMeta[k][1]}`, 'layer', new THREE.Vector3(-PLANE.w / 2 + 0.6, 0.05, PLANE.d / 2 - 0.6), layerGroups[k], k, 'view:' + k);
+}
+
+/* built layer: table blocks */
+const blockParts = {};
+for (const [k, p] of Object.entries(PHYS)) {
+  const g = new THREE.Group();
+  g.position.set(p.x, 0, p.z);
+  own(g, 't:' + k);
+  const fill = mat('std', k === 'sales' ? '--block-fact' : '--block');
+  const box = new THREE.Mesh(modelBox(p.w, p.h, p.d, G.blockRadius), fill);
+  box.position.y = p.h / 2;
+  box.userData.sel = 't:' + k;
+  pickables.push(box);
+  const edgeMat = mat('line', '--block-edge', { transparent: true, opacity: S.materials.edgeOpacity });
+  const edges = new THREE.LineSegments(modelOutline(p.w, p.h, p.d, G.blockRadius), edgeMat);
+  edges.position.copy(box.position);
+  g.add(box, edges);
+  contactShadow(g, 0, 0, p.w, p.d);
+  layerGroups.built.add(g);
+  blockParts['t:' + k] = { edgeMat, token: '--block-edge' };
+  label(`<b>${k}</b><span class="n">${fmt(p.rows)} rows &middot; ${p.cols} columns</span>`, '', new THREE.Vector3(0, p.h + S.labels.blockLift, 0), g, 'built', 't:' + k);
+}
+
+/* built layer: join rods + unmatched piles */
+const warnMat = mat('std', '--warning');
+const joinParts = {};
+for (const [k, j] of Object.entries(JOINS)) {
+  const p = PHYS[j.parent];
+  const a = new THREE.Vector3(PHYS.sales.x, 0.45, PHYS.sales.z);
+  const b = new THREE.Vector3(p.x, 0.45, p.z);
+  const r = own(rod(a, b, G.joinRadius, mat('std', '--key')), 'j:' + k, 'o:' + k);
+  const hit = rod(a, b, 0.35, hitMat);
+  hit.userData.sel = 'j:' + k;
+  pickables.push(hit);
+  layerGroups.built.add(r, hit);
+  const mid = a.clone().lerp(b, 0.62);
+  joinParts['j:' + k] = r;
+  label(`${j.label}<span class="n">${fmt(SALES - J[k].unmatched_rows)} matched</span>`, 'key join-label', mid.clone().add(new THREE.Vector3(0, 0.8, 0)), layerGroups.built, 'built', 'j:' + k);
+
+  // pile of cubes: 1 cube ~ 100 unmatched rows
+  const unmatched = J[k].unmatched_rows;
+  const n = Math.round(unmatched / 100);
+  const { size, gap, across: per, deep } = G.cube;
+  const inst = own(new THREE.InstancedMesh(modelBox(size, size, size, G.cube.radius, G.cube.segments), mat('std', '--critical'), n), 'o:' + k, 'j:' + k);
+  const dir = new THREE.Vector3().subVectors(b, a).setY(0).normalize();
+  const side = new THREE.Vector3(-dir.z, 0, dir.x);
+  // County branches toward the front, away from the store rod. The other
+  // two piles face the outer sides of their own joins.
+  if (k === 'county') side.negate();
+  const base = a.clone().lerp(b, 0.70).addScaledVector(side, 3.2).setY(0);
+  const stubStart = a.clone().lerp(b, 0.35).addScaledVector(side, 0.9);
+  const stubEnd = base.clone().setY(0.48);
+  const stub = own(rod(stubStart, stubEnd, G.branchRadius, mat('std', '--critical')), 'o:' + k, 'j:' + k);
+  overlay.add(stub);
+  // The red branch stops here; the remaining distance to the parent stays empty.
+  const crossAt = stubEnd.clone().addScaledVector(dir, 1.1).setY(0.65);
+  for (const sign of [-1, 1]) {
+    const delta = side.clone().multiplyScalar(0.28).add(new THREE.Vector3(0, sign * 0.28, 0));
+    overlay.add(own(rod(crossAt.clone().sub(delta), crossAt.clone().add(delta), G.stopRadius, mat('basic', '--critical')), 'o:' + k, 'j:' + k));
+  }
+  const m4 = new THREE.Matrix4();
+  for (let i = 0; i < n; i++) {
+    const layer = Math.floor(i / (per * deep));
+    const rem = i % (per * deep);
+    const cx = (rem % per) - (per - 1) / 2;
+    const cz = Math.floor(rem / per) - (deep - 1) / 2;
+    const pos = base.clone()
+      .addScaledVector(dir, cx * (size + gap))
+      .addScaledVector(side, cz * (size + gap))
+      .setY(size / 2 + layer * (size + gap));
+    m4.makeTranslation(pos.x, pos.y, pos.z);
+    inst.setMatrixAt(i, m4);
+  }
+  inst.userData.sel = 'o:' + k;
+  pickables.push(inst);
+  overlay.add(inst);
+  contactShadow(overlay, base.x, base.z, per * (size + gap), deep * (size + gap), ['o:' + k, 'j:' + k]);
+  const stubHit = rod(stubStart, stubEnd, 0.28, hitMat);
+  stubHit.userData.sel = 'o:' + k;
+  pickables.push(stubHit);
+  overlay.add(stubHit);
+  const top = Math.ceil(n / (per * deep)) * (size + gap);
+  const what = k === 'county' ? `their county is blank (code ${esc(D.design.county_code_for_blank)})` : `their ${k} is not in ${j.parent}`;
+  const pileLabel = label(`${fmt(unmatched)} sales rows<span class="n">${what}</span>`, 'crit pile-label', base.clone().addScaledVector(side, 1.6).setY(top + 0.8), overlay, 'built', 'o:' + k);
+  pileLabel.element.title = '1 cube is about 100 rows';
+  pileLabel.element.setAttribute('aria-describedby', 'pileTip');
+}
+
+/* built layer: copied product facts (sales -> products), drawn as an amber arc */
+{
+  const a = new THREE.Vector3(PHYS.sales.x + PHYS.sales.w / 2, 3.2, PHYS.sales.z - 0.3);
+  const b = new THREE.Vector3(PHYS.products.x - PHYS.products.w / 2, 3.2, PHYS.products.z + 0.3);
+  const curve = new THREE.QuadraticBezierCurve3(a, a.clone().lerp(b, 0.5).setY(5.6), b);
+  const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, G.tubeSegments, G.copyRadius, G.tubeSides, false), warnMat);
+  own(tube, 'c:products');
+  const hit = new THREE.Mesh(new THREE.TubeGeometry(curve, 20, 0.5, 6, false), hitMat);
+  hit.userData.sel = 'c:products';
+  pickables.push(hit);
+  overlay.add(tube, hit);
+  label('6 product facts copied into sales', 'warn', curve.getPoint(0.5).add(new THREE.Vector3(0, 0.55, 0)), overlay, 'built', 'c:products');
+}
+
+/* design layer: shallow models with dashed perimeter seams */
+const desParts = {};
+for (const [k, e] of Object.entries(DES)) {
+  const g = new THREE.Group();
+  g.position.set(e.x, 0, e.z);
+  own(g, 'd:' + k);
+  const { w, h, d, radius } = G.tile;
+  const tile = new THREE.Mesh(modelBox(w, h, d, radius), mat('std', k === 'Sale' ? '--block-fact' : '--block'));
+  tile.position.y = h / 2;
+  tile.userData.sel = 'd:' + k;
+  pickables.push(tile);
+  const dm = mat('dash', '--block-edge', { transparent: true, opacity: S.materials.edgeOpacity });
+  const outline = new THREE.LineSegments(modelOutline(w, h, d, radius), dm);
+  outline.computeLineDistances();
+  outline.position.copy(tile.position);
+  g.add(tile, outline);
+  contactShadow(g, 0, 0, w, d);
+  layerGroups.design.add(g);
+  desParts['d:' + k] = { edgeMat: dm, token: '--block-edge' };
+  label(`<b>${k}</b><span class="n">${fmt(e.n)}</span>`, '', new THREE.Vector3(0, S.labels.tileY, 0), g, 'design', 'd:' + k);
+}
+const relParts = {};
+for (const [from, to, words] of DES_EDGES) {
+  const a = new THREE.Vector3(DES[from].x, 0.18, DES[from].z);
+  const b = new THREE.Vector3(DES[to].x, 0.18, DES[to].z);
+  const r = own(rod(a, b, G.relationRadius, mat('std', '--ink-2')), 'r:' + from + '-' + to);
+  relParts['r:' + from + '-' + to] = r;
+  // the hit volume stops at each tile's edge, so a click on a tile picks the entity and a click between tiles picks the relation
+  const dir = b.clone().sub(a).setY(0).normalize();
+  const edge = Math.min(G.tile.w / 2 / Math.max(Math.abs(dir.x), 1e-6), G.tile.d / 2 / Math.max(Math.abs(dir.z), 1e-6)) + 0.1;
+  const hit = rod(a.clone().addScaledVector(dir, edge), b.clone().addScaledVector(dir, -edge), 0.5, hitMat);
+  hit.userData.sel = 'r:' + from + '-' + to;
+  pickables.push(hit);
+  layerGroups.design.add(r, hit);
+  label('1', 'key card', a.clone().lerp(b, 0.2).add(new THREE.Vector3(0, 0.45, 0)), layerGroups.design, 'design', 'r:' + from + '-' + to);
+  label('N', 'key card', a.clone().lerp(b, 0.8).add(new THREE.Vector3(0, 0.45, 0)), layerGroups.design, 'design', 'r:' + from + '-' + to);
+}
+
+/* user layer: the one result table, five column strips */
+const { w: colW, gap: colGap, d: colD, h: colH, radius: colRadius } = G.column;
+const userStartX = -((colW + colGap) * USER_COLS.length - colGap) / 2 + colW / 2;
+USER_COLS.forEach((c, i) => {
+  c.x = userStartX + i * (colW + colGap);
+  const strip = new THREE.Mesh(modelBox(colW, colH, colD, colRadius), mat('std', '--block'));
+  strip.position.set(c.x, colH / 2, 0);
+  strip.userData.sel = 'u:' + c.name;
+  own(strip, 'u:' + c.name);
+  pickables.push(strip);
+  const em = mat('line', '--block-edge', { transparent: true, opacity: S.materials.edgeOpacity });
+  const e = new THREE.LineSegments(modelOutline(colW, colH, colD, colRadius), em);
+  own(e, 'u:' + c.name);
+  e.position.copy(strip.position);
+  layerGroups.user.add(strip, e);
+  contactShadow(layerGroups.user, c.x, 0, colW, colD, ['u:' + c.name]);
+  blockParts['u:' + c.name] = { edgeMat: em, token: '--block-edge' };
+  label(c.name, 'col', new THREE.Vector3(c.x, G.column.labelY, -colD / 2 + 0.6), layerGroups.user, 'user', 'u:' + c.name);
+});
+label(`<b>Result of the exercise</b><span class="n">${fmt(USER_COLS.length)} columns &middot; ${fmt(D.exercise.rows)} rows</span>`, '', new THREE.Vector3(0, 0.4, colD / 2 + 1.7), layerGroups.user, 'user', 'view:user');
+
+function cellValue(key, value) {
+  if (value === undefined) return 'not sampled';
+  if (value === null) return 'NULL';
+  if (['total', 'case_cost'].includes(key)) return fmt(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return typeof value === 'number' ? fmt(value) : String(value);
+}
+function resultTable(rows, interactive = false, active = '') {
+  const headers = USER_COLS.map(c => `<th data-column="${c.name}" class="${c.name === active ? 'trace-column' : ''}">${interactive ? `<button type="button" data-result-col="${c.name}" aria-pressed="${c.name === active}">${c.name}</button>` : c.name}</th>`).join('');
+  const body = rows.map(r => `<tr>${USER_COLS.map(c => `<td data-column="${c.name}" class="${typeof r[c.name] === 'number' ? 'num ' : ''}${c.name === active ? 'trace-column' : ''}">${esc(cellValue(c.name, r[c.name]))}</td>`).join('')}</tr>`).join('');
+  return `<table><thead><tr>${headers}</tr></thead><tbody>${body}</tbody></table>`;
+}
+const resultEl = document.createElement('div');
+resultEl.className = 'lab tbl';
+const resultAnchor = document.createElement('div');
+resultAnchor.className = 'result-anchor';
+resultAnchor.append(resultEl);
+const resultObject = new CSS2DObject(resultAnchor);
+const resultHome = new THREE.Vector3(0, 0.3, colD / 2 + 5.4);
+resultObject.position.copy(resultHome);
+layerGroups.user.add(resultObject);
+labels.push({ o: resultObject, el: resultEl, layer: 'user', cls: 'tbl' });
+function updateResult(active = '') {
+  resultEl.innerHTML = `<div class="caption">Result of the exercise &middot; click a column to trace its source</div>${resultTable(D.exercise.first, true, active)}<div class="caption">${fmt(D.exercise.rows - D.exercise.first.length)} more rows &middot; ${fmt(D.exercise.rows)} rows returned</div>`;
+  resultEl.querySelectorAll('[data-result-col]').forEach(b => b.addEventListener('click', () => select('u:' + b.dataset.resultCol)));
+}
+for (const event of ['pointerdown', 'pointerup', 'click', 'wheel']) resultEl.addEventListener(event, ev => ev.stopPropagation());
+updateResult();
+
+/* Mappings use the same vertices as the focused blue trace. */
+const mapMats = {};
+const mapPoints = {};
+USER_COLS.forEach(c => {
+  const pts = [
+    new THREE.Vector3(c.x, LAYER_Y.user, 0),
+    new THREE.Vector3(DES[c.entity].x, LAYER_Y.design + G.tile.h, DES[c.entity].z),
+    new THREE.Vector3(PHYS[c.table].x, PHYS[c.table].h, PHYS[c.table].z),
+  ];
+  const m = mat('line', '--muted', { transparent: true, opacity: S.materials.mappingOpacity, depthWrite: false });
+  const line = own(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), m), 'u:' + c.name);
+  mappingGroup.add(line);
+  mapMats[c.name] = m;
+  mapPoints[c.name] = pts;
+});
+
+/* Each plate gets a depth map of its own objects, without shadows from other floors. */
+function setupPlateShadows() {
+  if (!FX.shadows) return;
+  scene.updateMatrixWorld(true);
+  for (const light of shadowLights) {
+    const layer = light.shadow.camera.userData.layer;
+    const group = layerGroups[layer];
+    const layerVisible = { value: 1 };
+    const depth = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+    // r160 shadow passes use the viewing camera's layers, so mask other floors
+    // in the depth shader instead of relying on shadow.camera.layers.
+    depth.onBeforeCompile = shader => {
+      shader.uniforms.layerVisible = layerVisible;
+      shader.fragmentShader = 'uniform float layerVisible;\n' + shader.fragmentShader.replace(
+        'void main() {', 'void main() {\n  if (layerVisible < 0.5) discard;');
+    };
+    depth.customProgramCacheKey = () => 'plate-depth-v1';
+    group.traverse(object => {
+      if (!object.isMesh || object.material === hitMat || object.userData.plate || object.userData.contactShadow) return;
+      object.userData.shadowCaster = true;
+      object.castShadow = true;
+      object.customDepthMaterial = depth;
+      object.onBeforeShadow = (_renderer, _object, _camera, shadowCamera) => {
+        layerVisible.value = shadowCamera.userData.layer === layer ? 1 : 0;
+      };
+    });
+    const bounds = new THREE.Box3().setFromObject(group);
+    const shadowCamera = light.shadow.camera;
+    shadowCamera.position.copy(light.position);
+    shadowCamera.lookAt(light.target.position);
+    shadowCamera.updateMatrixWorld(true);
+    const lightBounds = new THREE.Box3();
+    for (const x of [bounds.min.x, bounds.max.x]) for (const y of [bounds.min.y, bounds.max.y]) for (const z of [bounds.min.z, bounds.max.z]) {
+      lightBounds.expandByPoint(new THREE.Vector3(x, y, z).applyMatrix4(shadowCamera.matrixWorldInverse));
+    }
+    const pad = S.fx.shadowPadding;
+    shadowCamera.left = lightBounds.min.x - pad;
+    shadowCamera.right = lightBounds.max.x + pad;
+    shadowCamera.bottom = lightBounds.min.y - pad;
+    shadowCamera.top = lightBounds.max.y + pad;
+    shadowCamera.near = Math.max(0.1, -lightBounds.max.z - pad);
+    shadowCamera.far = -lightBounds.min.z + pad;
+    shadowCamera.updateProjectionMatrix();
+  }
+  invalidateShadows();
+}
+setupPlateShadows();
+
+applyTheme();
+
+/* ------------------------------------------------------------- views */
+const VIEWS = S.camera.views;
+let view = 'all';
+let anim = null;
+let selected = null;
+let focus = null; // Depth two: changing the object replaces the detail, not the return view.
+let returnView = null;
+const backBtn = document.getElementById('backBtn');
+const leaders = document.getElementById('focusLeaders');
+const cardAnchor = document.createElement('div');
+cardAnchor.className = 'scene-anchor';
+const cardEl = document.createElement('section');
+cardEl.className = 'scene-card';
+cardEl.setAttribute('aria-label', 'Focused data');
+cardAnchor.append(cardEl);
+const cardObject = new CSS2DObject(cardAnchor);
+cardObject.center.set(0, 0);
+cardObject.visible = false;
+scene.add(cardObject);
+for (const event of ['pointerdown', 'pointerup', 'click', 'wheel']) cardEl.addEventListener(event, ev => ev.stopPropagation());
+
+const traces = {};
+for (const c of USER_COLS) {
+  const group = own(new THREE.Group(), 'u:' + c.name);
+  const points = [...mapPoints[c.name]].reverse();
+  const curve = new THREE.CurvePath();
+  curve.add(new THREE.LineCurve3(points[0], points[1]));
+  curve.add(new THREE.LineCurve3(points[1], points[2]));
+  group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, G.tubeSegments * 2, G.traceRadius, G.tubeSides, false), mat('basic', '--key')));
+  const dots = Array.from({ length: 3 }, () => {
+    const dot = new THREE.Mesh(new THREE.SphereGeometry(G.dotRadius, G.rodSegments, G.tubeSides), mat('basic', '--key'));
+    group.add(dot); return dot;
+  });
+  const el = document.createElement('div');
+  el.className = 'path-label';
+  el.hidden = true;
+  el.setAttribute('aria-hidden', 'true');
+  el.dataset.column = c.name;
+  el.textContent = `↑ ${c.name} · ${cellValue(c.name, D.exercise.first[0][c.name])}`;
+  el.title = `${c.table} → ${c.entity} → ${c.name}`;
+  const badge = new CSS2DObject(el);
+  badge.visible = false;
+  badge.center.set(0, 0.5);
+  group.add(badge);
+  group.visible = false;
+  scene.add(group);
+  traces[c.name] = { group, curve, dots, badge };
+}
+function setActiveTrace(column = null) {
+  for (const [name, trace] of Object.entries(traces)) {
+    const active = name === column;
+    // CSS2D labels have their own DOM lifecycle; hiding the Group alone
+    // does not reliably hide a label that the renderer already mounted.
+    trace.group.visible = active;
+    trace.badge.visible = active;
+    trace.badge.element.hidden = !active;
+    trace.badge.element.setAttribute('aria-hidden', String(!active));
+  }
+}
+
+function fitScale() {
+  const aspect = stage.clientWidth / Math.max(1, stage.clientHeight);
+  return Math.max(1, 1.45 / aspect);
+}
+function moveCamera(pos, target, instant = false) {
+  if (instant || STATIC || reduceMotion) {
+    camera.position.copy(pos); controls.target.copy(target); controls.update();
+    camera.updateMatrixWorld(); anim = null;
+  } else {
+    anim = { t0: performance.now(), dur: 900, p0: camera.position.clone(), p1: pos, q0: controls.target.clone(), q1: target };
+  }
+}
+controls.addEventListener('start', () => { anim = null; });
+function clearFocus() {
+  focus = null; returnView = null;
+  cardObject.visible = false;
+  backBtn.hidden = true;
+  stage.classList.remove('focus-mode', 'trace-mode');
+  delete stage.dataset.focus;
+  resultEl.classList.remove('expanded');
+  resultEl.style.transform = '';
+  resultEl.style.width = ''; resultEl.style.maxHeight = '';
+  cardEl.style.width = ''; cardEl.style.maxHeight = '';
+  controls.maxDistance = 120;
+  resultObject.center.set(0.5, 0.5);
+  resultObject.position.copy(resultHome);
+  leaders.replaceChildren();
+  setActiveTrace();
+  updateResult();
+}
+function setView(name, instant) {
+  if (!VIEWS[name]) return;
+  const wasFocused = !!focus;
+  clearFocus();
+  view = name;
+  document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === name)));
+  const v = VIEWS[name], target = new THREE.Vector3(...v.target);
+  const pos = new THREE.Vector3(...v.pos).sub(target).multiplyScalar(fitScale()).add(target);
+  moveCamera(pos, target, instant);
+  if (wasFocused) { selected = null; panel.innerHTML = renderOverview(); wirePanel(); highlight(null); }
+  refreshScene();
+}
+function relatedTo(sel) {
+  const ids = new Set([sel]);
+  const [kind, id] = sel.split(':');
+  if (kind === 'u') {
+    const c = USER_COLS.find(c => c.name === id);
+    ids.add('d:' + c.entity); ids.add('t:' + c.table);
+  } else if (kind === 't' || kind === 'd') {
+    USER_COLS.filter(c => kind === 't' ? c.table === id : c.entity === id).forEach(c => {
+      ids.add('u:' + c.name); ids.add('d:' + c.entity); ids.add('t:' + c.table);
+    });
+    if (kind === 'd') Object.keys(DESIGN_MAP[id]).forEach(t => ids.add('t:' + t));
+  } else if (kind === 'j' || kind === 'o') {
+    ids.add('j:' + id); ids.add('o:' + id); ids.add('t:sales'); ids.add('t:' + JOINS[id].parent);
+  } else if (kind === 'r') id.split('-').forEach(k => ids.add('d:' + k));
+  else if (kind === 'c') { ids.add('t:sales'); ids.add('t:products'); }
+  else if (sel === 'view:user') USER_COLS.forEach(c => ids.add('u:' + c.name));
+  return ids;
+}
+function refreshScene() {
+  for (const material of Object.values(mapMats)) {
+    material.userData.baseOpacity = !focus && view === 'all' && stepState.step !== 2
+      ? S.materials.overviewMappingOpacity : S.materials.mappingOpacity;
+  }
+  setActiveTrace(focus?.column);
+  const order = ['built', 'design', 'user'];
+  for (const [k, g] of Object.entries(layerGroups)) g.visible = !!focus || view === 'all' || order.indexOf(k) <= order.indexOf(view);
+  mappingGroup.visible = !!focus?.column || view === 'all' || stepState.step === 2;
+  overlay.visible = !!focus || view === 'all' || view === 'built';
+  scene.traverse(o => {
+    if (!o.material || o.material === hitMat) return;
+    let p = o, ids, layer;
+    while (p) {
+      if (!ids && p.userData.context) ids = p.userData.context;
+      if (!layer) layer = Object.keys(layerGroups).find(k => layerGroups[k] === p);
+      p = p.parent;
+    }
+    const related = ids?.some(id => focus?.related.has(id));
+    const factor = focus ? (related ? 1 : 0.15) : (layer && view !== 'all' && layer !== view ? 0.1 : 1);
+    if (o.userData.shadowCaster) o.castShadow = FX.shadows && factor === 1;
+    const material = o.material;
+    material.transparent = true;
+    material.opacity = (material.userData.baseOpacity ?? 1) * factor;
+    material.depthWrite = factor === 1 && material.opacity >= 0.9;
+  });
+  refreshLabels();
+  invalidateShadows();
+}
+function refreshLabels() {
+  stage.classList.toggle('overview-mode', view === 'all' && !focus);
+  for (const L of labels) {
+    const id = L.el.dataset.sel;
+    if (L.cls === 'col') {
+      const index = USER_COLS.findIndex(c => 'u:' + c.name === id);
+      L.o.position.y = G.column.labelY + (view === 'all' && !focus ? S.labels.columnStagger[index] : 0);
+    }
+    let show = view === 'all' || L.layer === view || !!focus?.related.has(id);
+    if (L.cls.includes('layer')) show = !focus && view === 'all' && stage.clientWidth > 640;
+    if (L.cls.includes('tbl')) show = view === 'user' || !!focus?.column || focus?.sel === 'view:user';
+    if (L.o.parent === overlay && !overlay.visible) show = false;
+    if (!focus && view === 'all' && /key|crit|warn/.test(L.cls) && !stepState.on) show = false;
+    L.el.classList.toggle('hidden', !show);
+    L.el.style.opacity = show && focus && !L.cls.includes('tbl') && !focus.related.has(id) ? '0.15' : '';
+    if (L.el.tagName === 'BUTTON') L.el.tabIndex = show && id ? 0 : -1;
+    L.el.querySelectorAll('button').forEach(b => { b.tabIndex = show ? 0 : -1; });
+  }
+}
+function projectToStage(point) {
+  const p = point.clone().project(camera);
+  return { x: (p.x + 1) * stage.clientWidth / 2, y: (1 - p.y) * stage.clientHeight / 2, z: p.z };
+}
+function pickPoint(o) {
+  if (o.isInstancedMesh) {
+    const matrix = new THREE.Matrix4();
+    o.getMatrixAt(0, matrix);
+    return new THREE.Vector3().setFromMatrixPosition(matrix).applyMatrix4(o.matrixWorld);
+  }
+  return new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3());
+}
+
+const builtLeaders = document.getElementById('builtLeaders');
+let labelLayoutKey = '';
+function layoutSceneLabels() {
+  if (focus) {
+    if (labelLayoutKey) {
+      for (const L of labels) L.el.style.translate = '';
+      builtLeaders.replaceChildren(); labelLayoutKey = '';
+    }
+    return;
+  }
+  const visible = labels.filter(L => !L.el.classList.contains('hidden') && L.el.style.display !== 'none');
+  const w = stage.clientWidth, h = stage.clientHeight;
+  if (!w || !h) return;
+  const key = [view, w, h, ...camera.matrixWorld.elements, ...visible.map(L => `${L.el.dataset.sel}:${L.el.offsetWidth}:${L.el.offsetHeight}`)].join('|');
+  if (key === labelLayoutKey) return;
+  labelLayoutKey = key;
+  for (const L of labels) L.el.style.translate = '';
+  // Labels must leave the geometric click targets clear as well as each other.
+  const occupied = pickables.filter(isVisible).map(o => {
+    const p = projectToStage(pickPoint(o));
+    return { left: p.x - 18, right: p.x + 18, top: p.y - 18, bottom: p.y + 18 };
+  });
+  const stageRect = stage.getBoundingClientRect();
+  for (const el of [document.getElementById('legend'), stage.querySelector('.hint'), stepsNav]) {
+    const r = el.getBoundingClientRect();
+    if (r.width && r.height) occupied.push({ left: r.left - stageRect.left, right: r.right - stageRect.left, top: r.top - stageRect.top, bottom: r.bottom - stageRect.top });
+  }
+  // Reserve the large result card and layer headings before placing small chips.
+  const rank = L => L.cls.includes('tbl') ? 0 : L.cls.includes('layer') ? 1
+    : /^(t:|d:|u:)/.test(L.el.dataset.sel || '') ? 2 : L.cls.includes('join-label') ? 3 : 4;
+  visible.sort((a, b) => rank(a) - rank(b));
+  const lines = [];
+  for (const L of visible) {
+    const anchor = projectToStage(L.o.getWorldPosition(new THREE.Vector3()));
+    const width = L.el.offsetWidth, height = L.el.offsetHeight;
+    if (!width || !height) continue;
+    const preferred = { x: anchor.x - width / 2, y: anchor.y - height / 2 };
+    const clampX = x => Math.max(12, Math.min(w - width - 12, x));
+    const clampY = y => Math.max(32, Math.min(h - height - 16, y));
+    const candidates = [[clampX(preferred.x), clampY(preferred.y)]];
+    for (const r of occupied) {
+      const xs = [r.left - width - 8, r.right + 8];
+      const ys = [r.top - height - 8, r.bottom + 8];
+      xs.forEach(x => candidates.push([clampX(x), clampY(preferred.y)]));
+      ys.forEach(y => candidates.push([clampX(preferred.x), clampY(y)]));
+      xs.forEach(x => ys.forEach(y => candidates.push([clampX(x), clampY(y)])));
+    }
+    let best = null, cost = Infinity;
+    const consider = ([x, y]) => {
+      const rect = { left: x, right: x + width, top: y, bottom: y + height };
+      if (occupied.some(r => rect.left < r.right + 6 && rect.right > r.left - 6 && rect.top < r.bottom + 6 && rect.bottom > r.top - 6)) return;
+      const distance = (x - preferred.x) ** 2 + (y - preferred.y) ** 2;
+      if (distance < cost) { best = rect; cost = distance; }
+    };
+    candidates.forEach(consider);
+    if (!best) {
+      for (let y = 32; y <= h - height - 16; y += 16) {
+        for (let x = 12; x <= w - width - 12; x += 16) consider([x, y]);
+      }
+    }
+    if (!best) continue;
+    occupied.push(best);
+    const dx = best.left - preferred.x, dy = best.top - preferred.y;
+    // CSS translate composes with the transform written by CSS2DRenderer.
+    L.el.style.translate = `${dx}px ${dy}px`;
+    if (Math.hypot(dx, dy) > 8) {
+      const x = Math.max(best.left, Math.min(best.right, anchor.x));
+      const y = Math.max(best.top, Math.min(best.bottom, anchor.y));
+      lines.push(`<line class="${L.cls.includes('crit') ? 'crit' : ''}" x1="${anchor.x}" y1="${anchor.y}" x2="${x}" y2="${y}"/>`);
+    }
+  }
+  builtLeaders.innerHTML = lines.join('');
+}
+function objectPoint(sel) {
+  const o = pickables.find(o => o.userData.sel === sel);
+  scene.updateMatrixWorld(true);
+  return o ? new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3()) : new THREE.Vector3(0, LAYER_Y.user, 0);
+}
+function traceRegions() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  if (w >= 720) {
+    const divider = Math.round(w * 0.49);
+    return {
+      path: { left: 18, right: divider - 24, top: 68, bottom: h - 20 },
+      cards: { left: divider + 8, width: w - divider - 26, top: 64, bottom: h - 18, maxHeight: Math.min(h * 0.38, (h - 100) / 2) },
+    };
+  }
+  const maxHeight = Math.min(h * 0.25, 180);
+  return {
+    path: { left: 16, right: w - 16, top: 64 + maxHeight + 12, bottom: h - maxHeight - 30 },
+    cards: { left: 16, width: w - 32, top: 64, bottom: h - 18, maxHeight },
+  };
+}
+function fitTraceCamera(column, instant) {
+  const c = USER_COLS.find(c => c.name === column);
+  const points = mapPoints[column].map(p => p.clone());
+  // Fit the actual endpoint blocks too, so the card cannot hide their lower edges.
+  for (const sel of ['u:' + column, 'd:' + c.entity, 't:' + c.table]) {
+    const o = pickables.find(o => o.userData.sel === sel);
+    const box = new THREE.Box3().setFromObject(o);
+    for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) points.push(new THREE.Vector3(x, y, z));
+  }
+  const rect = traceRegions().path;
+  const centre = new THREE.Box3().setFromPoints(points).getCenter(new THREE.Vector3());
+  const direction = new THREE.Vector3(...S.camera.traceDirection).normalize();
+  const right = new THREE.Vector3(1, 0, 0);
+  const up = new THREE.Vector3().crossVectors(direction, right).normalize();
+  const focal = stage.clientHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
+  const offsetX = stage.clientWidth / 2 - (rect.left + rect.right) / 2;
+  const offsetY = stage.clientHeight / 2 - (rect.top + rect.bottom) / 2;
+  const halfWidth = Math.max(24, (rect.right - rect.left) / 2 - 22);
+  const halfHeight = Math.max(24, (rect.bottom - rect.top) / 2 - 22);
+  let distance = 45;
+  for (const point of points) {
+    const relative = point.clone().sub(centre), depth = relative.dot(direction);
+    // Include perspective depth when fitting into an off-centre screen rectangle.
+    distance = Math.max(distance,
+      depth + Math.abs(relative.dot(right) * focal - offsetX * depth) / halfWidth,
+      depth + Math.abs(relative.dot(up) * focal + offsetY * depth) / halfHeight);
+  }
+  const target = centre.clone().addScaledVector(right, offsetX * distance / focal).addScaledVector(up, -offsetY * distance / focal);
+  controls.maxDistance = Math.max(120, distance * 1.2);
+  moveCamera(target.clone().addScaledVector(direction, distance), target, instant);
+}
+function focusCamera(instant = false) {
+  if (!focus) return;
+  const { sel, column } = focus;
+  if (column) { fitTraceCamera(column, instant); return; }
+  controls.maxDistance = 120;
+  const [kind, id] = sel.split(':');
+  let points = [objectPoint(sel)];
+  if (kind === 'j' || kind === 'o') points = [objectPoint('t:sales'), objectPoint('t:' + JOINS[id].parent)];
+  else if (kind === 'r') points = id.split('-').map(k => objectPoint('d:' + k));
+  else if (kind === 'c') points = [objectPoint('t:sales'), objectPoint('t:products')];
+  const box = new THREE.Box3().setFromPoints(points), size = box.getSize(new THREE.Vector3());
+  const target = box.getCenter(new THREE.Vector3());
+  const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  const mobile = stage.clientWidth < 900;
+  const distance = Math.max(27, (size.y + 10) / (2 * tangent), (size.x + 8) / (2 * tangent * camera.aspect * (mobile ? 0.85 : 0.48)));
+  const direction = new THREE.Vector3(...S.camera.focusDirection).normalize();
+  const right = new THREE.Vector3(direction.z, 0, -direction.x).normalize();
+  const up = new THREE.Vector3().crossVectors(direction, right).normalize();
+  if (!mobile && sel !== 'view:user') target.addScaledVector(right, distance * tangent * camera.aspect * 0.48);
+  else target.addScaledVector(up, -distance * tangent * 0.52);
+  moveCamera(target.clone().addScaledVector(direction, distance), target, instant);
+}
+function enterFocus(sel) {
+  if (!focus) returnView = { view, selected, pos: camera.position.clone(), target: controls.target.clone(), step: stepState.on ? stepState.step : 0 };
+  const column = sel.startsWith('u:') ? sel.slice(2) : null;
+  focus = { sel, column, related: relatedTo(sel) };
+  stage.classList.add('focus-mode');
+  stage.classList.toggle('trace-mode', !!column);
+  stage.dataset.focus = sel;
+  backBtn.hidden = false;
+  const [kind, id] = sel.split(':');
+  cardEl.className = 'scene-card';
+  cardEl.style.width = ''; cardEl.style.maxHeight = '';
+  resultEl.style.width = ''; resultEl.style.maxHeight = '';
+  cardObject.visible = sel !== 'view:user';
+  cardObject.position.copy(objectPoint(sel));
+  if (column) {
+    const c = USER_COLS.find(c => c.name === column);
+    cardObject.position.copy(mapPoints[column][2]);
+    cardEl.innerHTML = tableCard(c.table, column);
+  } else if (kind === 't') cardEl.innerHTML = tableCard(id);
+  else if (kind === 'd') { cardEl.classList.add('design-card'); cardEl.innerHTML = designCard(id); }
+  else if (kind === 'j' || kind === 'o') { cardEl.classList.add('match-card'); cardEl.innerHTML = matchCard(id); }
+  else if (kind === 'r') { cardEl.classList.add('design-card'); cardEl.innerHTML = renderRel(id).replace(SRC, ''); }
+  else if (kind === 'c') { cardEl.classList.add('design-card'); cardEl.innerHTML = `<h3>Product facts copied into sales</h3><ul>${D.copies.filter(c => !['state_btl_cost', 'btl_price'].includes(c.sales_col)).map(c => `<li><code>${esc(c.sales_col)}</code> &middot; ${fmt(c.differs)} rows differ</li>`).join('')}</ul>`; }
+  cardEl.scrollTop = 0;
+  cardEl.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => select(b.dataset.go)));
+  resultEl.classList.toggle('expanded', !!column || sel === 'view:user');
+  updateResult(column || '');
+  if (column || sel === 'view:user') {
+    resultObject.center.set(0, 0);
+    resultObject.position.set(column ? USER_COLS.find(c => c.name === column).x : 0, 0.4, 0);
+  } else { resultObject.center.set(0.5, 0.5); resultObject.position.copy(resultHome); resultEl.style.transform = ''; }
+  setActiveTrace(column);
+  stopWalk();
+  focusCamera();
+  refreshScene();
+}
+function backFocus() {
+  if (!focus) return;
+  const previous = returnView;
+  const currentPosition = camera.position.clone(), currentTarget = controls.target.clone();
+  clearFocus();
+  setView(previous.view, true);
+  selected = previous.selected;
+  if (previous.step) startWalk(previous.step);
+  else { panel.innerHTML = selected ? renderPanel(selected) : renderOverview(); wirePanel(); highlight(selected); }
+  camera.position.copy(currentPosition); controls.target.copy(currentTarget); controls.update();
+  moveCamera(previous.pos, previous.target);
+  refreshScene();
+  const previousLabel = labels.find(L => L.el.dataset.sel === selected && !L.el.classList.contains('hidden'));
+  (previousLabel?.el || document.querySelector(`[data-view="${view}"]`)).focus({ preventScroll: true });
+}
+backBtn.addEventListener('click', backFocus);
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && focus) { ev.preventDefault(); backFocus(); } });
+function highlight(sel) {
+  for (const [k, p] of Object.entries({ ...blockParts, ...desParts })) {
+    const factor = p.edgeMat.opacity / p.edgeMat.userData.baseOpacity;
+    const opacity = k === sel ? S.materials.selectedEdgeOpacity : S.materials.edgeOpacity;
+    p.edgeMat.color.set(css(k === sel ? '--key' : p.token));
+    p.edgeMat.userData.baseOpacity = opacity;
+    p.edgeMat.opacity = factor * opacity;
+  }
+  for (const L of labels) L.el.classList.toggle('sel', L.el.dataset.sel === sel);
+  for (const [k, r] of Object.entries(joinParts)) r.scale.set(k === sel ? 2 : 1, 1, k === sel ? 2 : 1);
+  for (const [k, r] of Object.entries(relParts)) { r.material.color.set(css(k === sel ? '--key' : '--ink-2')); r.scale.set(k === sel ? 2 : 1, 1, k === sel ? 2 : 1); }
+  invalidateShadows();
+}
+function validSelection(sel) {
+  return typeof sel === 'string' && (sel === 'view:user' || pickables.some(o => o.userData.sel === sel));
+}
+function select(sel, opts = {}) {
+  if (sel.startsWith('view:') && sel !== 'view:user') { stopWalk(); setView(sel.slice(5)); return; }
+  if (sel.startsWith('step:')) { startWalk(Number(sel.slice(5))); return; }
+  if (!validSelection(sel)) return;
+  if (opts.focus !== false) enterFocus(sel);
+  else if (!opts.keepWalk) stopWalk();
+  selected = sel;
+  highlight(sel);
+  panel.innerHTML = sel === 'view:user' ? `<h2>Result of the exercise</h2><p class="kicker">${fmt(D.exercise.rows)} rows &middot; ${fmt(USER_COLS.length)} columns</p><p>Click a column to follow a value from its stored table.</p><pre>${esc(D.exercise.query)}</pre>${SRC}` : renderPanel(sel);
+  panel.scrollTop = 0;
+  wirePanel();
+}
+
+// Keep cards within the stage while a leader stays attached to the 3D object.
+function layoutFocusCards() {
+  if (!focus) return;
+  const w = stage.clientWidth, h = stage.clientHeight, lines = [];
+  const regions = focus.column ? traceRegions() : null;
+  if (regions) {
+    for (const el of [resultEl, cardEl]) {
+      el.style.width = regions.cards.width + 'px';
+      el.style.maxHeight = regions.cards.maxHeight + 'px';
+    }
+  }
+  const place = (o, el, result = false) => {
+    const v = o.getWorldPosition(new THREE.Vector3()).project(camera);
+    const x = (v.x + 1) * w / 2, y = (1 - v.y) * h / 2;
+    const ew = el.offsetWidth, eh = el.offsetHeight;
+    const left = regions ? regions.cards.left : w < 900 || focus.sel === 'view:user' ? (w - ew) / 2 : w - ew - 18;
+    const desiredTop = result ? (focus.column ? 64 : h - eh - 24) : focus.column || w < 900 ? h - eh - 18 : y - eh / 2;
+    const top = regions ? (result ? regions.cards.top : regions.cards.bottom - eh) : Math.max(64, Math.min(h - eh - 12, desiredTop));
+    el.style.transform = `translate(${left - x}px, ${top - y}px)`;
+    const endX = Math.max(left, Math.min(left + ew, x)), endY = Math.max(top, Math.min(top + eh, y));
+    if (v.z >= -1 && v.z <= 1) lines.push(`<line x1="${x}" y1="${y}" x2="${endX}" y2="${endY}"/><circle cx="${x}" cy="${y}" r="3"/>`);
+  };
+  if (cardObject.visible) place(cardObject, cardEl);
+  if (focus.column || focus.sel === 'view:user') place(resultObject, resultEl, true);
+  if (regions) {
+    const badge = traces[focus.column].badge, el = badge.element, rect = regions.path;
+    // Leave room on either side of the path; long store names wrap instead of
+    // spilling across the gutter onto a card.
+    el.style.maxWidth = Math.max(80, (rect.right - rect.left) / 2 - 20) + 'px';
+    const p = projectToStage(badge.getWorldPosition(new THREE.Vector3()));
+    const width = el.offsetWidth, height = el.offsetHeight;
+    const preferredLeft = p.x + 12 + width <= rect.right ? p.x + 12 : p.x - width - 12;
+    const left = Math.max(rect.left, Math.min(rect.right - width, preferredLeft));
+    const top = Math.max(rect.top, Math.min(rect.bottom - height, p.y - height / 2));
+    el.style.translate = `${left - p.x}px ${top - (p.y - height / 2)}px`;
+  }
+  leaders.innerHTML = lines.join('');
+}
+function flowTrace(now) {
+  if (!focus?.column) return;
+  const trace = traces[focus.column];
+  const t = STATIC || reduceMotion ? 0.54 : ((now / 14000) % 1);
+  trace.dots.forEach((dot, i) => dot.position.copy(trace.curve.getPoint((t + i / trace.dots.length) % 1)));
+  trace.badge.position.copy(trace.curve.getPoint(t));
+}
+
+/* raycast clicks (a drag is not a click) */
+const ray = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+let down = null;
+function pick(ev) {
+  const r = renderer.domElement.getBoundingClientRect();
+  ndc.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
+  scene.updateMatrixWorld(true);
+  camera.updateMatrixWorld();
+  ray.setFromCamera(ndc, camera);
+  const hits = ray.intersectObjects(pickables.filter(o => isVisible(o)), false).sort((a, b) => a.distance - b.distance);
+  return hits.length ? hits[0].object.userData.sel : null;
+}
+function isVisible(o) {
+  let n = o;
+  while (n) { if (n.visible === false) return false; n = n.parent; }
+  const layer = Object.entries(layerGroups).find(([, g]) => { let p = o.parent; while (p) { if (p === g) return true; p = p.parent; } return false; });
+  return !layer || !!focus || view === 'all' || layer[0] === view;
+}
+renderer.domElement.addEventListener('pointerdown', ev => { down = [ev.clientX, ev.clientY]; });
+renderer.domElement.addEventListener('pointerup', ev => {
+  if (!down) return;
+  const moved = Math.hypot(ev.clientX - down[0], ev.clientY - down[1]);
+  down = null;
+  if (moved > 5) return;
+  const s = pick(ev);
+  if (s) select(s);
+  else if (focus) backFocus();
+  else if (!stepState.on) { selected = null; highlight(null); panel.innerHTML = renderOverview(); wirePanel(); }
+});
+const pileTip = document.getElementById('pileTip');
+function showPileTip(sel, ev) {
+  pileTip.hidden = !sel?.startsWith('o:');
+  if (!pileTip.hidden) {
+    const r = stage.getBoundingClientRect();
+    pileTip.style.left = Math.max(10, Math.min(stage.clientWidth - 200, ev.clientX - r.left + 12)) + 'px';
+    pileTip.style.top = Math.max(10, Math.min(stage.clientHeight - 40, ev.clientY - r.top + 16)) + 'px';
+  }
+}
+renderer.domElement.addEventListener('pointermove', ev => {
+  if (down) return;
+  const sel = pick(ev);
+  renderer.domElement.style.cursor = sel ? 'pointer' : 'grab';
+  showPileTip(sel, ev);
+});
+renderer.domElement.addEventListener('pointerleave', () => { pileTip.hidden = true; });
+for (const L of labels.filter(L => L.el.dataset.sel?.startsWith('o:'))) {
+  L.el.addEventListener('pointerenter', ev => showPileTip(L.el.dataset.sel, ev));
+  L.el.addEventListener('pointerleave', () => { pileTip.hidden = true; });
+}
+
+/* ------------------------------------------------------------- panel */
+function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function tagFor(role) {
+  if (role === 'pk') return '<span class="tag pk">PK</span>';
+  if (role === 'pk*') return '<span class="tag pk">unique</span>';
+  if (role === 'fk') return '<span class="tag fk">FK</span>';
+  if (role === 'copy') return '<span class="tag copy">copy</span>';
+  if (role === 'sale') return '<span class="tag sale">price at sale</span>';
+  return '';
+}
+
+function renderOverview() {
+  return `
+  <h2>One database, three layers</h2>
+  <p class="kicker">Start from sales, join the other three tables, show county, store, name, total and case_cost.</p>
+  <p>The exercise asks for one result table. Behind it the same data can be read at three levels, roughly the external, conceptual and internal levels of the three-schema architecture in Elmasri &amp; Navathe (Ch. 2.2):</p>
+  <ul>
+    <li><button class="linkbtn" data-go="view:user">User view</button>: the result the exercise asks for, five columns and 1,000 rows.</li>
+    <li><button class="linkbtn" data-go="view:design">Design</button>: the things the data describes and how they relate. A store sits in a county; a vendor and a category describe a product; a sale links a store and a product.</li>
+    <li><button class="linkbtn" data-go="view:built">As built</button>: the four tables PostgreSQL stores. Block height shows rows on a log scale: sales has about ${fmt(Math.round(SALES / T.counties.rows / 1000) * 1000)} times as many rows as counties but stands only about ${(Math.log10(SALES) / Math.log10(T.counties.rows)).toFixed(1)} times as tall.</li>
+  </ul>
+  <p>The thin solid lines map each result column to a design entity and a stored table. Click a column to follow a value upward from its source.</p>
+  <h3>How to read the picture</h3>
+  <div class="read">
+    <i class="bar3"></i><span>A block is a stored table: height = rows (log scale), width = columns</span>
+    <i></i><span>Blue line = a join key between two tables</span>
+    <i class="crit"></i><span>Red cubes = sales rows with no match, 1 cube &asymp; 100 rows</span>
+    <i class="warn"></i><span>Amber arc = product facts copied into sales</span>
+    <i class="map"></i><span>Thin solid line = a mapping between layers</span>
+  </div>
+  <h3>What the layers show together</h3>
+  <dl class="stat">
+    <dt class="crit">${fmt(dropped)}</dt><dd>sales rows (${pct(dropped, SALES)}) that the four-table INNER JOIN leaves out because they have no matching store, product or county</dd>
+    <dt>${multi.length}</dt><dd>stores that appear in two counties, because the county is written on each sale instead of once on the store</dd>
+    <dt>6</dt><dd>product facts copied into every sales row (category, vendor, description and more), which drift from the products table</dd>
+  </dl>
+  <p><button class="btn" data-go="step:1">Walk the exercise step by step</button></p>
+  ${SRC}`;
+}
+
+function colTable(t) {
+  const roles = ROLE[t] || {};
+  const rows = T[t].columns.map(c => {
+    const [role, note] = roles[c.name] || ['attr', ''];
+    let extra = note;
+    if (t === 'sales' && copyBy[c.name]) {
+      const cp = copyBy[c.name];
+      extra = `${esc(note)}; differs in ${fmt(cp.differs)} rows`;
+    } else extra = esc(extra);
+    return `<tr><td class="c">${esc(c.name)}</td><td>${tagFor(role)}${role === 'fk' ? '&rarr; <code>' + esc(note) + '</code>' : extra}</td><td class="note">${esc(c.type.replace('timestamp without time zone', 'timestamp'))}</td></tr>`;
+  }).join('');
+  return `<table class="cols"><thead><tr><th>column</th><th>role</th><th>type</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function sampleBlock(t) {
+  const s = (D.samples[t] || [])[0];
+  if (!s) return '';
+  const kv = Object.entries(s).map(([k, v]) => `<tr><td class="c">${esc(k)}</td><td>${esc(v === null ? 'NULL' : v)}</td></tr>`).join('');
+  return `<h3>One sample row</h3><table class="cols"><tbody>${kv}</tbody></table>`;
+}
+
+function renderTable(t) {
+  const p = PHYS[t];
+  let body = '';
+  if (t === 'sales') {
+    body = `<p>The primary table of the exercise: one row per sale line, ${fmt(SALES)} rows. Three of its columns are the keys that reach the other tables.</p>
+    <div class="flag warn"><b>6 columns repeat product facts</b> that already live in products, and they no longer agree everywhere (for example ${fmt(copyBy.description.differs)} rows spell the description differently, such as <i>${esc(copyBy.description.examples[0].in_sales)}</i> vs <i>${esc(copyBy.description.examples[0].in_products)}</i>). Two price columns record the price at the time of sale, which is a fact of the sale itself.</div>
+    <div class="flag"><b>${multi.length} stores appear in two counties</b>, for example store ${multi[0].store} in ${esc(multi[0].counties.join(' and '))} (${fmt(multi[0].rows)} rows), because sales, not stores, records the county.</div>`;
+  } else if (t === 'stores') {
+    body = `<p>One row per store; <code>store</code> is unique in all ${fmt(T.stores.rows)} rows and has a PRIMARY KEY constraint.</p>
+    <div class="flag"><b>No county column.</b> Which county a store is in is written on every sale row instead, which is how ${multi.length} stores ended up in two counties.</div>
+    <p class="note">${fmt(J.store.parents_never_used)} stores have no sales at all. A LEFT JOIN from stores would keep them; the exercise's INNER JOIN from sales never sees them.</p>`;
+  } else if (t === 'products') {
+    body = `<p>One row per product; <code>item_no</code> is unique in all ${fmt(T.products.rows)} rows and has a PRIMARY KEY constraint. Sales calls the same key <code>item</code>, so this join needs <code>ON</code> rather than <code>USING</code>.</p>
+    <p class="note">Vendor (${fmt(D.design.vendors)} distinct) and category (${fmt(D.design.categories)} distinct) are stored as text on each product row. ${fmt(J.item.parents_never_used)} products were never sold in this period.</p>`;
+  } else if (t === 'counties') {
+    body = `<p>One row per Iowa county with its population. <code>county</code> is unique in all ${T.counties.rows} rows, but this copy has no PRIMARY KEY constraint on it.</p>
+    <p class="note">Every county has sales. ${fmt(J.county.null_rows)} sales rows have a blank county (county_number ${esc(D.design.county_code_for_blank)}), so they drop out of the join.</p>`;
+  }
+  return `<h2>${t}</h2><p class="kicker">As built &middot; ${fmt(p.rows)} rows &middot; ${p.cols} columns</p>${body}<h3>Columns</h3>${colTable(t)}${sampleBlock(t)}${SRC}`;
+}
+
+function renderJoin(k) {
+  const j = JOINS[k], s = J[k];
+  const matched = SALES - s.unmatched_rows;
+  const alias = { stores: 'b', products: 'c', counties: 'd' }[j.parent];
+  const parentKey = k === 'item' ? 'item_no' : k;
+  let why = '';
+  if (k === 'store') why = `${fmt(s.unmatched_rows)} sales rows carry one of ${s.unmatched_keys} store numbers that are not in stores.`;
+  if (k === 'item') why = `${fmt(s.unmatched_rows)} sales rows carry one of ${s.unmatched_keys} item numbers that are not in products.`;
+  if (k === 'county') why = `All ${fmt(s.unmatched_rows)} unmatched rows have a blank county (code ${esc(D.design.county_code_for_blank)}). Every county name that is filled in matches.`;
+  return `<h2>sales.${k} &rarr; ${j.parent}.${parentKey}</h2>
+  <p class="kicker">Join ${j.n} of 3 in the exercise &middot; foreign key to primary key</p>
+  <pre>INNER JOIN ${j.parent.padEnd(8)} ${alias} ON ${j.on}</pre>
+  <p>${j.sameName ? `The key has the same name on both sides, so <code>USING (${k})</code> also works.` : 'The key changes its name between the two tables, so the join needs <code>ON</code>; <code>USING (item)</code> returns an error.'}</p>
+  <dl class="stat">
+    <dt>${fmt(matched)}</dt><dd>sales rows find a ${{ stores: 'store', products: 'product', counties: 'county' }[j.parent]} (INNER JOIN keeps these)</dd>
+    <dt class="crit">${fmt(s.unmatched_rows)}</dt><dd>sales rows find none (LEFT JOIN keeps them with empty ${j.parent} columns)</dd>
+    <dt>${fmt(s.parents_never_used)}</dt><dd>${j.parent} rows that no sale points to</dd>
+  </dl>
+  <p class="note">${why}</p>
+  <h3>How to check it</h3>
+  <pre>SELECT count(*) FROM sales a
+LEFT JOIN ${j.parent} ${alias} ON ${j.on}
+WHERE ${alias}.${parentKey} IS NULL;   <span class="dim">-- ${fmt(s.unmatched_rows)}</span></pre>
+  ${SRC}`;
+}
+
+function renderOrphans(k) {
+  const j = JOINS[k], s = J[k];
+  const what = k === 'county' ? 'have a blank county' : `point to a ${k === 'store' ? 'store' : 'product'} that is not in ${j.parent}`;
+  return `<h2>${fmt(s.unmatched_rows)} sales rows ${what}</h2>
+  <p class="kicker">As built &middot; ${Math.round(s.unmatched_rows / 100)} cubes, each about 100 rows</p>
+  <p>The exercise has no WHERE clause, yet INNER JOIN still filters: a sale with no partner row is dropped without a warning. Across all three joins, ${fmt(dropped)} of ${fmt(SALES)} sales rows (${pct(dropped, SALES)}) are left out.</p>
+  <p>For a 1,000-row preview this does not matter. For a total, such as sales by county, the result would come out lower than the real figure, so a LEFT JOIN or a check like the one below comes first.</p>
+  <pre>SELECT count(*) FROM sales a
+LEFT JOIN ${j.parent} x ON ${j.on.replace(/\b[bcd]\./, 'x.')}
+WHERE x.${k === 'item' ? 'item_no' : k} IS NULL;</pre>
+  <div class="flag"><b>Where a design would stop this.</b> A FOREIGN KEY from sales.${k} to ${j.parent} makes the database refuse such a row when it is loaded. This copy has no FOREIGN KEY constraints.</div>
+  ${SRC}`;
+}
+
+function renderCopies() {
+  const desc = D.copies.filter(c => !['state_btl_cost', 'btl_price'].includes(c.sales_col));
+  const price = D.copies.filter(c => ['state_btl_cost', 'btl_price'].includes(c.sales_col));
+  const item = c => `<li><div class="top"><span><code>sales.${esc(c.sales_col)}</code> vs <code>products.${esc(c.products_col)}</code></span><span class="n">${fmt(c.differs)} rows</span></div>${c.examples[0] ? `<div class="ex">most common: <i>${esc(c.examples[0].in_sales)}</i> in sales, <i>${esc(c.examples[0].in_products)}</i> in products</div>` : ''}</li>`;
+  const L = D.copies_loose;
+  return `<h2>The same facts stored twice</h2>
+  <p class="kicker">As built &middot; sales repeats columns that belong to products and to stores</p>
+  <p>Six sales columns repeat a product fact. Once a fact is written in two places the copies can drift apart, and here they have, out of ${fmt(desc[0].compared)} sales rows that find their product:</p>
+  <ul class="difflist">${desc.map(item).join('')}</ul>
+  <p class="note">Some of this is spelling. Ignoring capitals, the vendor names still differ in ${fmt(L.vendor_ignoring_case)} rows; ignoring capitals and punctuation, the descriptions still differ in ${fmt(L.description_ignoring_case_and_punctuation)}.</p>
+  <p>The two price columns are a different case. The price paid is a fact of the sale, so a difference from today's catalog price is expected:</p>
+  <ul class="difflist">${price.map(item).join('')}</ul>
+  <div class="flag"><b>The store's county has the same problem.</b> It is written on each sale, and ${multi.length} stores appear in two counties: ${multi.map(m => `${m.store} (${esc(m.counties.join(' / '))})`).join(', ')}.</div>
+  <p><button class="linkbtn" data-go="view:design">See how the design layer stores each fact once</button></p>
+  ${SRC}`;
+}
+
+const DES_TEXT = {
+  Sale: () => `<p>One row per sale line: date, store, product, bottles sold, the prices paid, and the total. Descriptive product facts (category, vendor, description, pack, size) move to Product so they are stored once. The prices stay here because the price paid is part of the sale: ${fmt(copyBy.state_btl_cost.differs)} rows differ from today's catalog price, which is expected.</p>
+    <p class="note">Built as: <code>sales</code>, with six copied product columns and the county.</p>`,
+  Store: () => `<p>One row per store, and in this design the store carries its county, so each store is in exactly one county and the fact is written once.</p>
+    <div class="flag"><b>As built, the county sits on each sale instead</b>, and ${multi.length} of ${fmt(D.design.stores_in_sales)} stores with sales appear in two counties, for example store ${multi[0].store}: ${esc(multi[0].counties.join(' and '))}.</div>
+    <p class="note">Built as: <code>stores</code> (no county column) plus <code>sales.county</code>.</p>`,
+  County: () => `<p>One row per county (${T.counties.rows}), with its population. A county contains many stores, which is the hierarchy behind the exercise: sale &rarr; store &rarr; county.</p>
+    <p class="note">Built as: <code>counties</code>, reached from <code>sales.county</code> rather than from stores. ${fmt(J.county.null_rows)} sales rows have no county.</p>`,
+  Product: () => `<p>One row per product, keyed by <code>item_no</code>. Vendor and category become their own entities, so the product points to them instead of repeating their names.</p>
+    <p class="note">Built as: <code>products</code>, with vendor and category stored as text. ${fmt(J.item.parents_never_used)} products were never sold in this period.</p>`,
+  Vendor: () => `<p>${fmt(D.design.vendors)} vendors. As built, a vendor's name is written on every product row and again on every sale row, and ${fmt(copyBy.vendor.differs)} sale rows spell it differently from products, mostly in capitals.</p>
+    <p class="note">Built as: <code>products.vendor</code>, <code>products.vendor_name</code>, <code>sales.vendor_no</code>, <code>sales.vendor</code>.</p>`,
+  Category: () => `<p>${fmt(D.design.categories)} categories. As built, ${fmt(copyBy.category_name.differs)} sale rows carry a different category from the product's current one, for example <i>${esc(copyBy.category_name.examples[0].in_sales)}</i> in sales and <i>${esc(copyBy.category_name.examples[0].in_products)}</i> in products.</p>
+    <p class="note">Whether a report should use the category at the time of sale or today's category is a design decision; storing both without saying which is which hides that choice.</p>`,
+};
+function renderDesign(k) {
+  return `<h2>${k}</h2><p class="kicker">Design &middot; ${DES[k].about} &middot; ${fmt(DES[k].n)}</p>${DES_TEXT[k]()}${SRC}`;
+}
+function renderRel(id) {
+  const [from, to] = id.split('-');
+  const e = DES_EDGES.find(x => x[0] === from && x[1] === to);
+  let extra = '';
+  if (from === 'County') extra = `<div class="flag"><b>As built this line does not exist.</b> stores has no county column; the county is reached through sales, and ${multi.length} stores appear in two counties.</div>`;
+  if (from === 'Store') extra = `<p class="note">As built: <code>sales.store</code> &rarr; <code>stores.store</code>, with ${fmt(J.store.unmatched_rows)} sales rows whose store is missing.</p>`;
+  if (from === 'Product') extra = `<p class="note">As built: <code>sales.item</code> &rarr; <code>products.item_no</code>, with ${fmt(J.item.unmatched_rows)} sales rows whose product is missing.</p>`;
+  if (from === 'Vendor' || from === 'Category') extra = `<p class="note">As built there is no ${from.toLowerCase()} table; the name is repeated on each product and each sale.</p>`;
+  return `<h2>${from} &rarr; ${to}</h2><p class="kicker">Design &middot; ${e[2]}</p>
+  <p>In a design document this line becomes a FOREIGN KEY on the "many" side (${to}), pointing to the PRIMARY KEY of ${from}.</p>${extra}${SRC}`;
+}
+function renderUserCol(name) {
+  const c = USER_COLS.find(x => x.name === name);
+  return `<h2>${name}</h2><p class="kicker">User view &middot; one of the five columns in the result</p>
+  <div class="chain"><span>${name}</span><em>&rarr;</em><span>${c.entity}</span><em>&rarr;</em><span class="mono">${c.table}.${name}</span></div>
+  <p>The user sees one column. The design says it describes a ${c.entity.toLowerCase()}, and the stored value comes from <code>${c.table}</code>${c.table === 'sales' ? ', the primary table of the query, so no join is needed' : ', reached through <code>' + esc(c.via) + '</code>'}.</p>
+  ${name === 'store' ? '<p class="note">The task asks for store from the stores table, so the query uses <code>b.store</code>. With an INNER JOIN it always equals <code>a.store</code>.</p>' : ''}
+  ${SRC}`;
+}
+function renderPanel(sel) {
+  const [kind, id] = [sel.slice(0, 1), sel.slice(2)];
+  if (kind === 't') return renderTable(id);
+  if (kind === 'j') return renderJoin(id);
+  if (kind === 'o') return renderOrphans(id);
+  if (kind === 'c') return renderCopies();
+  if (kind === 'd') return renderDesign(id);
+  if (kind === 'r') return renderRel(id);
+  if (kind === 'u') return renderUserCol(id);
+  return renderOverview();
+}
+function wirePanel() {
+  panel.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => select(b.dataset.go)));
+}
+
+/* ------------------------------------------------------- walk the exercise */
+const QUERY_LINES = [
+  ['SELECT d.county, b.store, b.name, a.total, c.case_cost', 1],
+  ['FROM sales a', 2],
+  ['INNER JOIN stores   b ON a.store  = b.store', 4],
+  ['INNER JOIN products c ON a.item   = c.item_no', 4],
+  ['INNER JOIN counties d ON a.county = d.county', 4],
+  ['-- no WHERE: the task keeps every row', 5],
+  ['LIMIT 1000;', 6],
+];
+const firstRows = D.exercise.first.slice(0, 3);
+const STEPS = [
+  { q: 'What columns do you want to show as output?', view: 'user', sel: null,
+    a: () => `Five: <code>county</code>, <code>store</code>, <code>name</code>, <code>total</code>, <code>case_cost</code>. In the user view they are one table.` },
+  { q: 'What tables need to be used to pull those columns together?', view: 'all', sel: null,
+    a: () => `Follow the solid mappings: county from counties, store and name from stores, total from sales, case_cost from products.` },
+  { q: 'Do you need a JOIN?', view: 'built', sel: 't:sales',
+    a: () => `Yes. The five columns live in four tables, so with sales as the primary table there are three JOINs.` },
+  { q: 'If you need a JOIN, what are the key_columns?', view: 'built', sel: 'j:item',
+    a: () => `<code>store = store</code>, <code>item = item_no</code>, <code>county = county</code>. Only the product key changes its name, so that join needs <code>ON</code>.` },
+  { q: 'Are there conditions by which you’re filtering out / or focusing on rows?', view: 'built', sel: 'o:store',
+    a: () => `The task has none. INNER JOIN filters anyway: ${fmt(dropped)} sales rows (${pct(dropped, SALES)}) have no matching store, product or county and are dropped.` },
+  { q: 'Do you want it ordered? Do you want to see a limited selection of the data?', view: 'user', sel: null,
+    a: () => `<code>LIMIT 1000</code> and no <code>ORDER BY</code>, so which 1,000 rows come back is not fixed. On 17 Nov the same query started with Carroll / Main Street Liquors in one run and Wright / The Beverage Shop / Belmond in a later one, because PostgreSQL may start a scan of a large table where an earlier scan left off (<code>synchronize_seqscans</code>; with it off the first row was Scott / Hy-vee #4 / Davenport).` },
+];
+const stepState = { on: false, step: 0 };
+const stepsNav = document.getElementById('steps');
+function buildStepsNav() {
+  stepsNav.innerHTML = `<button class="arrow" data-s="prev" aria-label="Previous step">&larr;</button>` +
+    STEPS.map((_, i) => `<button data-s="${i + 1}" aria-label="Step ${i + 1}">${i + 1}</button>`).join('') +
+    `<button class="arrow" data-s="next" aria-label="Next step">&rarr;</button><button class="arrow" data-s="close" aria-label="Close steps">&times;</button>`;
+  stepsNav.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.s;
+    if (v === 'prev') goStep(Math.max(1, stepState.step - 1));
+    else if (v === 'next') goStep(Math.min(STEPS.length, stepState.step + 1));
+    else if (v === 'close') stopWalk(true);
+    else goStep(Number(v));
+  }));
+}
+function startWalk(n = 1) {
+  n = Number.isFinite(n) ? Math.max(1, Math.min(STEPS.length, Math.trunc(n))) : 1;
+  stepState.on = true;
+  document.getElementById('walkBtn').setAttribute('aria-pressed', 'true');
+  stepsNav.hidden = false;
+  goStep(n);
+}
+function stopWalk(resetPanel) {
+  if (!stepState.on) return;
+  stepState.on = false; stepState.step = 0;
+  stepsNav.hidden = true;
+  document.getElementById('walkBtn').setAttribute('aria-pressed', 'false');
+  for (const m of Object.values(mapMats)) m.color.set(css('--muted'));
+  if (resetPanel) { selected = null; setView(view); panel.innerHTML = renderOverview(); wirePanel(); highlight(null); }
+}
+function highlightWalkStep() {
+  const n = stepState.on ? stepState.step : 0;
+  for (const m of Object.values(mapMats)) m.color.set(css(n === 2 ? '--key' : '--muted'));
+  if (n === 1 || n === 6) for (const c of USER_COLS) blockParts['u:' + c.name].edgeMat.color.set(css('--key'));
+  if (n === 4) for (const r of Object.values(joinParts)) r.scale.set(2, 1, 2);
+  invalidateShadows();
+}
+function goStep(n) {
+  stepState.step = n;
+  const s = STEPS[n - 1];
+  stepsNav.querySelectorAll('button[data-s]').forEach(b => b.toggleAttribute('aria-current', b.dataset.s === String(n)));
+  stepsNav.querySelectorAll('button[aria-current]').forEach(b => b.setAttribute('aria-current', 'step'));
+  setView(s.view);
+  selected = s.sel;
+  highlight(s.sel);
+  highlightWalkStep();
+  const lines = QUERY_LINES.map(([t, at]) => at > n ? '' : `<span class="${at === n ? 'new' : (t.startsWith('--') ? 'dim' : '')}">${esc(t)}</span>`).filter(Boolean).join('\n');
+  const result = n === 6 ? `<h3>Result (first rows of one run)</h3>${resultTable(firstRows).replace('<table>', '<table class="res">')}<p class="note">${fmt(D.exercise.rows)} rows returned.</p>` : '';
+  panel.innerHTML = `<h2>Step ${n} of ${STEPS.length}</h2>
+    <p class="kicker">The six questions from the Class 3 slide "Translating Question to SQL query"</p>
+    <p><b>&ldquo;${esc(s.q)}&rdquo;</b></p>
+    <p>${s.a()}</p>
+    <h3>The query so far</h3>
+    <pre>${lines}</pre>
+    ${result}
+    <p>${n < STEPS.length ? `<button class="btn" data-next>Next step</button>` : `<button class="btn" data-go="view:all">Back to all layers</button>`}</p>
+    ${SRC}`;
+  panel.querySelector('[data-next]')?.addEventListener('click', () => goStep(n + 1));
+  wirePanel();
+}
+buildStepsNav();
+
+/* --------------------------------------------------------- table view */
+function renderTableView() {
+  const tv = document.getElementById('tableView');
+  const tables = Object.keys(T).map(t => `<div><h3>${t} <span class="note">(${fmt(T[t].rows)} rows)</span></h3>${colTable(t)}<div class="scene-card">${tableCard(t)}</div></div>`).join('');
+  const joins = Object.keys(JOINS).map(k => {
+    const j = JOINS[k], s = J[k];
+    return `<tr><td class="c">${esc(j.on)}</td><td class="num">${fmt(SALES - s.unmatched_rows)}</td><td class="num">${fmt(s.unmatched_rows)}</td><td class="num">${fmt(s.parents_never_used)}</td></tr>`;
+  }).join('');
+  const des = Object.entries(DES).map(([k, e]) => `<tr><td>${k}</td><td>${esc(e.about)}</td><td class="num">${fmt(e.n)}</td></tr>`).join('');
+  tv.innerHTML = `<h2>Tables as built</h2><div class="grid">${tables}</div>
+  <h2>Joins in the exercise</h2>
+  <table class="res"><thead><tr><th>join</th><th class="num">sales rows matched</th><th class="num">not matched</th><th class="num">parent rows never used</th></tr></thead><tbody>${joins}</tbody></table>
+  <p class="note">All three INNER JOINs together keep ${fmt(J.all_inner_kept)} of ${fmt(SALES)} sales rows; ${fmt(dropped)} are left out.</p>
+  ${Object.keys(JOINS).map(k => `<div class="scene-card match-card">${matchCard(k)}</div>`).join('')}
+  <h2>Result of the exercise</h2><div class="result-table">${resultTable(D.exercise.first)}</div>
+  <pre>${esc(D.exercise.query)}</pre>
+  <h2>Design entities</h2>
+  <table class="res"><thead><tr><th>entity</th><th>grain</th><th class="num">rows</th></tr></thead><tbody>${des}</tbody></table>
+  <p class="note">Relationships: ${DES_EDGES.map(e => e[2]).join('; ')}.</p>
+  ${SRC}`;
+}
+document.getElementById('tvBtn').addEventListener('click', ev => {
+  const on = ev.currentTarget.getAttribute('aria-pressed') !== 'true';
+  ev.currentTarget.setAttribute('aria-pressed', String(on));
+  document.body.classList.toggle('tv', on);
+  const tv = document.getElementById('tableView');
+  tv.hidden = !on;
+  if (on) renderTableView(); else resize();
+});
+document.getElementById('walkBtn').addEventListener('click', () => (stepState.on ? stopWalk(true) : startWalk(1)));
+document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => { stopWalk(false); setView(b.dataset.view); }));
+
+/* Theme changes recolour the current scene without rebuilding navigation state. */
+function refreshTheme() {
+  applyTheme();
+  highlight(selected);
+  highlightWalkStep();
+  refreshScene();
+}
+document.querySelectorAll('[data-theme-choice]').forEach(button => button.addEventListener('click', () => {
+  const params = new URLSearchParams(location.hash.slice(1));
+  params.set('theme', button.dataset.themeChoice);
+  history.replaceState(history.state, '', '#' + params.toString());
+  refreshTheme();
+}));
+window.addEventListener('hashchange', refreshTheme);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (new URLSearchParams(location.hash.slice(1)).get('theme') === 'auto') refreshTheme();
+});
+
+/* ------------------------------------------------------------- loop */
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  if (!w || !h) return;
+  stage.style.setProperty('--stage-width', w + 'px');
+  stage.style.setProperty('--stage-height', h + 'px');
+  stage.classList.toggle('compact-focus', w < 900);
+  renderer.setSize(w, h);
+  labelRenderer.setSize(w, h);
+  camera.aspect = w / Math.max(1, h);
+  camera.updateProjectionMatrix();
+  if (focus) focusCamera(true);
+  refreshLabels();
+}
+new ResizeObserver(resize).observe(stage);
+resize();
+
+function frame(now) {
+  if (anim) {
+    const t = Math.min(1, (now - anim.t0) / anim.dur);
+    const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    camera.position.lerpVectors(anim.p0, anim.p1, e);
+    controls.target.lerpVectors(anim.q0, anim.q1, e);
+    if (t >= 1) anim = null;
+  }
+  controls.update();
+  flowTrace(now);
+  renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
+  layoutSceneLabels();
+  layoutFocusCards();
+  requestAnimationFrame(frame);
+}
+
+/* ------------------------------------------------------------- start */
+const startView = hashParams.get('view') || 'all';
+setView(VIEWS[startView] ? startView : 'all', true);
+panel.innerHTML = renderOverview();
+wirePanel();
+if (hashParams.get('step')) startWalk(Number(hashParams.get('step')));
+else if (hashParams.get('sel')) select(hashParams.get('sel'), { focus: hashParams.get('focus') === '1' });
+if (hashParams.get('tv') === '1') document.getElementById('tvBtn').click();
+requestAnimationFrame(frame);
+window.__ex = {
+  get effects() { return { mode: FX.mode, shadowMaps: renderer.shadowMap.enabled, environment: !!scene.environment, contactShadows: !!contactTexture }; },
+  get state() { return { view, selected, focus: focus?.sel || null, animating: !!anim }; },
+  // test hook: screen position (CSS px, page coordinates) of the centre of a clickable object
+  screenOf(sel) {
+    const o = pickables.find(x => x.userData.sel === sel);
+    if (!o) return null;
+    scene.updateMatrixWorld(true);
+    camera.updateMatrixWorld();
+    const c = pickPoint(o);
+    const v = c.clone().project(camera);
+    const r = renderer.domElement.getBoundingClientRect();
+    return { x: r.left + (v.x + 1) / 2 * r.width, y: r.top + (1 - v.y) / 2 * r.height };
+  },
+};
+window.__ready = true;
+</script>
+</body>
+</html>
