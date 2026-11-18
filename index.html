@@ -251,7 +251,8 @@ window.EXPLORER_STYLE = (() => {
   /* layout */
   .layout { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) var(--panel-width); min-height: 0; }
   .stage { position: relative; min-height: 560px; overflow: hidden; background: var(--stage); }
-  .stage canvas { display: block; }
+  .stage canvas { display: block; cursor: grab; }
+  .stage.is-dragging, .stage.is-dragging * { cursor: grabbing !important; }
   .labels { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
   .panel {
     border-left: 1px solid var(--hair); background: var(--page);
@@ -330,7 +331,7 @@ window.EXPLORER_STYLE = (() => {
 
   /* Focus stays in the stage; leaders keep screen-facing cards tied to their objects. */
   .back { position: absolute; top: 14px; left: 14px; z-index: 20; }
-  .back[hidden], .pile-tip[hidden] { display: none; }
+  .back[hidden], .hover-card[hidden], #pileTip[hidden] { display: none; }
   .focus-leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
   .focus-leaders line { stroke: var(--key); stroke-width: 1.25; }
   .focus-leaders circle { fill: var(--key); }
@@ -376,7 +377,14 @@ window.EXPLORER_STYLE = (() => {
   .path-label { background: var(--surface); border: 1px solid var(--key); border-radius: var(--control-radius); padding: 5px 8px; color: var(--key); font-size: 12px; white-space: nowrap; pointer-events: none; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
   .path-label[hidden] { display: none !important; }
   .trace-mode .path-label { white-space: normal; overflow-wrap: anywhere; text-overflow: clip; }
-  .pile-tip { position: absolute; z-index: 30; pointer-events: none; background: var(--surface); border: 1px solid var(--critical); border-radius: var(--control-radius); padding: 5px 8px; font-size: 12px; }
+  .hover-card { position: absolute; z-index: 40; pointer-events: none; width: max-content; max-width: min(320px, calc(100% - 24px)); padding: 9px 12px; border: 1px solid var(--axis); border-radius: var(--control-radius); background: var(--surface); box-shadow: var(--card-shadow); font-size: 12px; line-height: 1.5; }
+  .hover-card strong, .hover-card span { display: block; }
+  .hover-card strong { color: var(--ink); font-weight: 600; }
+  .hover-card span { color: var(--ink-2); }
+  .hover-card #pileTip { color: var(--critical); font-size: 11px; }
+  .lab.is-hover:not(.sel), .lab.is-hover:not(.sel) b, [data-result-col].is-hover { color: var(--key) !important; border-color: color-mix(in srgb, var(--key) 65%, var(--hair)) !important; }
+  .lab.crit.is-hover:not(.sel), .lab.crit.is-hover:not(.sel) b { color: var(--critical) !important; border-color: var(--critical) !important; }
+  .lab.warn.is-hover:not(.sel), .lab.warn.is-hover:not(.sel) b { color: var(--warning-ink) !important; border-color: var(--warning-ink) !important; }
   .focus-mode .legend, .focus-mode .hint { display: none; }
   .compact-focus .scene-card { max-height: calc(var(--stage-height, 800px) * .54); }
   .compact-focus.trace-mode .scene-card, .compact-focus.trace-mode .lab.tbl.expanded { max-height: calc(var(--stage-height, 800px) * .29); }
@@ -413,7 +421,7 @@ window.EXPLORER_STYLE = (() => {
   .flag { border-left: 3px solid var(--critical); padding: 2px 0 2px 10px; margin: 8px 0 12px; }
   .flag.warn { border-left-color: var(--warning); }
   .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 6px 0 12px; font-size: 12.5px; }
-  .chain span { border: 1px solid var(--axis); border-radius: 4px; padding: 1px 6px; }
+  .chain button { border: 1px solid var(--axis); border-radius: 4px; padding: 1px 6px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
   .chain em { color: var(--muted); font-style: normal; }
   .linkbtn { border: 0; background: none; padding: 0; color: var(--key); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
   .res { width: 100%; border-collapse: collapse; font-size: 12px; margin: 6px 0 10px; }
@@ -448,7 +456,6 @@ window.EXPLORER_STYLE = (() => {
   .btn:hover, .seg button:not([aria-pressed="true"]):hover {
     background: color-mix(in srgb, var(--ink) var(--hover-mix), var(--surface));
   }
-  .lab:not(.tbl):hover { border-color: currentColor; }
   .lab.layer { background: transparent; border-color: transparent; box-shadow: none; }
   .lab.tbl { font-family: var(--body-font); letter-spacing: normal; }
   .hint { bottom: 10px; }
@@ -489,7 +496,7 @@ window.EXPLORER_STYLE = (() => {
     <svg class="focus-leaders" id="focusLeaders" aria-hidden="true"></svg>
     <svg class="focus-leaders built-leaders" id="builtLeaders" aria-hidden="true"></svg>
     <button type="button" class="btn back" id="backBtn" hidden aria-label="Back to previous view">&larr; Back <span class="note">Esc</span></button>
-    <div class="pile-tip" id="pileTip" role="tooltip" hidden>1 cube is about 100 rows</div>
+    <div class="hover-card" id="hoverCard" role="tooltip" hidden><strong id="hoverFact"></strong><span id="hoverAction"></span><span id="pileTip" hidden>1 cube is about 100 rows</span></div>
     <nav class="steps" id="steps" hidden aria-label="Exercise steps"></nav>
     <div class="legend" id="legend" aria-label="Legend">
       <i class="bar3"></i><span>Block height = rows (log scale), width = columns</span>
@@ -747,6 +754,7 @@ function mat(kind, token, opts = {}) {
   else if (kind === 'line') m = new THREE.LineBasicMaterial(opts);
   else if (kind === 'dash') m = new THREE.LineDashedMaterial({ dashSize: S.materials.dashSize, gapSize: S.materials.gapSize, ...opts });
   m.userData.baseOpacity = m.opacity;
+  m.userData.themeToken = token;
   m.color.set(css(token));
   themed.push([m, 'color', token]);
   return m;
@@ -777,7 +785,6 @@ function label(html, cls, pos, parent, layer, sel) {
   el.innerHTML = html;
   // Counts stay available to assistive technology when overview chips show names only.
   el.setAttribute('aria-label', [...el.childNodes].map(node => node.textContent.trim()).filter(Boolean).join(' '));
-  el.title = el.getAttribute('aria-label');
   if (sel) {
     el.dataset.sel = sel;
     el.addEventListener('click', ev => { ev.stopPropagation(); select(sel); });
@@ -855,7 +862,7 @@ const planeMeta = {
   design: ['Design', 'conceptual level: entities and relationships'],
   built: ['As built', 'the four stored tables in PostgreSQL'],
 };
-const planeMats = {};
+const planeMats = {}, planeEdges = {};
 for (const k of Object.keys(layerGroups)) {
   const { roughness, metalness, opacity } = S.materials.plate;
   const pm = mat('std', '--plane', { roughness, metalness, transparent: true, opacity, depthWrite: false });
@@ -869,6 +876,7 @@ for (const k of Object.keys(layerGroups)) {
   const edge = new THREE.LineSegments(modelOutline(PLANE.w, G.plateThickness, PLANE.d, G.plateRadius),
     mat('line', '--axis', { transparent: true, opacity: S.materials.plateEdgeOpacity }));
   edge.position.copy(plane.position);
+  planeEdges[k] = edge.material;
   layerGroups[k].add(edge);
   label(`<b>${planeMeta[k][0]}</b><br>${planeMeta[k][1]}`, 'layer', new THREE.Vector3(-PLANE.w / 2 + 0.6, 0.05, PLANE.d / 2 - 0.6), layerGroups[k], k, 'view:' + k);
 }
@@ -955,8 +963,7 @@ for (const [k, j] of Object.entries(JOINS)) {
   const top = Math.ceil(n / (per * deep)) * (size + gap);
   const what = k === 'county' ? `their county is blank (code ${esc(D.design.county_code_for_blank)})` : `their ${k} is not in ${j.parent}`;
   const pileLabel = label(`${fmt(unmatched)} sales rows<span class="n">${what}</span>`, 'crit pile-label', base.clone().addScaledVector(side, 1.6).setY(top + 0.8), overlay, 'built', 'o:' + k);
-  pileLabel.element.title = '1 cube is about 100 rows';
-  pileLabel.element.setAttribute('aria-describedby', 'pileTip');
+  pileLabel.element.setAttribute('aria-label', pileLabel.element.getAttribute('aria-label') + '. 1 cube is about 100 rows');
 }
 
 /* built layer: copied product facts (sales -> products), drawn as an amber arc */
@@ -1172,7 +1179,13 @@ for (const c of USER_COLS) {
   group.add(badge);
   group.visible = false;
   scene.add(group);
-  traces[c.name] = { group, curve, dots, badge };
+  // Allocated once: hover has a thinner path and no dots or value badge.
+  const preview = new THREE.Mesh(new THREE.TubeGeometry(curve, G.tubeSegments * 2, G.traceRadius * 0.45, G.tubeSides, false),
+    mat('basic', '--key', { transparent: true, opacity: 0.28, depthWrite: false }));
+  preview.visible = false;
+  own(preview, 'u:' + c.name);
+  scene.add(preview);
+  traces[c.name] = { group, curve, dots, badge, preview };
 }
 function setActiveTrace(column = null) {
   for (const [name, trace] of Object.entries(traces)) {
@@ -1191,6 +1204,7 @@ function fitScale() {
   return Math.max(1, 1.45 / aspect);
 }
 function moveCamera(pos, target, instant = false) {
+  clearHover();
   if (instant || STATIC || reduceMotion) {
     camera.position.copy(pos); controls.target.copy(target); controls.update();
     camera.updateMatrixWorld(); anim = null;
@@ -1198,8 +1212,10 @@ function moveCamera(pos, target, instant = false) {
     anim = { t0: performance.now(), dur: 900, p0: camera.position.clone(), p1: pos, q0: controls.target.clone(), q1: target };
   }
 }
-controls.addEventListener('start', () => { anim = null; });
+controls.addEventListener('start', () => { anim = null; controlsBusy = true; clearHover(); });
+controls.addEventListener('end', () => { controlsBusy = false; });
 function clearFocus() {
+  clearHover();
   focus = null; returnView = null;
   cardObject.visible = false;
   backBtn.hidden = true;
@@ -1247,6 +1263,7 @@ function relatedTo(sel) {
   return ids;
 }
 function refreshScene() {
+  clearHover();
   for (const material of Object.values(mapMats)) {
     material.userData.baseOpacity = !focus && view === 'all' && stepState.step !== 2
       ? S.materials.overviewMappingOpacity : S.materials.mappingOpacity;
@@ -1507,6 +1524,7 @@ function backFocus() {
 backBtn.addEventListener('click', backFocus);
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && focus) { ev.preventDefault(); backFocus(); } });
 function highlight(sel) {
+  clearHover();
   for (const [k, p] of Object.entries({ ...blockParts, ...desParts })) {
     const factor = p.edgeMat.opacity / p.edgeMat.userData.baseOpacity;
     const opacity = k === sel ? S.materials.selectedEdgeOpacity : S.materials.edgeOpacity;
@@ -1523,6 +1541,7 @@ function validSelection(sel) {
   return typeof sel === 'string' && (sel === 'view:user' || pickables.some(o => o.userData.sel === sel));
 }
 function select(sel, opts = {}) {
+  clearHover();
   if (sel.startsWith('view:') && sel !== 'view:user') { stopWalk(); setView(sel.slice(5)); return; }
   if (sel.startsWith('step:')) { startWalk(Number(sel.slice(5))); return; }
   if (!validSelection(sel)) return;
@@ -1584,7 +1603,7 @@ function flowTrace(now) {
 /* raycast clicks (a drag is not a click) */
 const ray = new THREE.Raycaster();
 const ndc = new THREE.Vector2();
-let down = null;
+let down = null, controlsBusy = false;
 function pick(ev) {
   const r = renderer.domElement.getBoundingClientRect();
   ndc.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
@@ -1600,33 +1619,243 @@ function isVisible(o) {
   const layer = Object.entries(layerGroups).find(([, g]) => { let p = o.parent; while (p) { if (p === g) return true; p = p.parent; } return false; });
   return !layer || !!focus || view === 'all' || layer[0] === view;
 }
-renderer.domElement.addEventListener('pointerdown', ev => { down = [ev.clientX, ev.clientY]; });
+
+/* Hover is a temporary overlay on the current selection, never a navigation action.
+   Pointer events only queue a sample. The frame loop performs at most one raycast. */
+const hoverMedia = matchMedia('(hover: hover)');
+const hoverCard = document.getElementById('hoverCard');
+const hoverFact = document.getElementById('hoverFact');
+const hoverAction = document.getElementById('hoverAction');
+const pileTip = document.getElementById('pileTip');
+const HOVER = { delay: 120, edgeOpacity: 0.84, mix: 0.65, emissive: 0.10, mappingOpacity: 0.65, gap: 16, padding: 12 };
+let hoverId = null, hoverPreview = null, hoverSource = null, pendingHover = null;
+const hoverMaterials = new Map(), hoverVisibility = new Map();
+let hoverDescription = null;
+function hoverAllowed() {
+  return hoverMedia.matches && !anim && !down && !controlsBusy && !document.body.classList.contains('tv');
+}
+function hoverEligible(id) {
+  if (!id) return false;
+  if (id.startsWith('view:')) return !focus && (view === 'all' || view === id.slice(5));
+  if (focus && !focus.related.has(id)) return false;
+  return pickables.some(o => o.userData.sel === id && isVisible(o));
+}
+function saveHoverMaterial(m) {
+  if (!hoverMaterials.has(m)) hoverMaterials.set(m, {
+    color: m.color.clone(), opacity: m.opacity,
+    emissive: m.emissive?.clone(), emissiveIntensity: m.emissiveIntensity,
+  });
+}
+function saveHoverVisibility(o) {
+  if (!hoverVisibility.has(o)) hoverVisibility.set(o, o.visible);
+}
+function clearHover() {
+  pendingHover = null;
+  for (const [m, saved] of hoverMaterials) {
+    m.color.copy(saved.color); m.opacity = saved.opacity;
+    if (saved.emissive) { m.emissive.copy(saved.emissive); m.emissiveIntensity = saved.emissiveIntensity; }
+  }
+  hoverMaterials.clear();
+  for (const [o, visible] of hoverVisibility) o.visible = visible;
+  hoverVisibility.clear();
+  if (hoverPreview) traces[hoverPreview].preview.visible = false;
+  if (hoverId) stage.querySelectorAll('.is-hover').forEach(el => el.classList.remove('is-hover'));
+  if (hoverDescription) {
+    const { el, previous } = hoverDescription;
+    if (previous === null) el.removeAttribute('aria-describedby');
+    else el.setAttribute('aria-describedby', previous);
+    hoverDescription = null;
+  }
+  hoverId = null; hoverPreview = null; hoverSource = null;
+  hoverCard.hidden = true; pileTip.hidden = true;
+  renderer.domElement.style.cursor = down ? 'grabbing' : 'grab';
+}
+function brightenEdge(m) {
+  saveHoverMaterial(m);
+  m.color.lerp(new THREE.Color(css('--key')), HOVER.mix);
+  m.opacity = Math.max(m.opacity, HOVER.edgeOpacity);
+}
+function highlightHover(id) {
+  const ids = new Set([id]), [kind, key] = id.split(':');
+  if (kind === 'j') { ids.add('t:sales'); ids.add('t:' + JOINS[key].parent); }
+  if (kind === 'r') key.split('-').forEach(name => ids.add('d:' + name));
+  if (kind === 'view') {
+    brightenEdge(planeEdges[key]);
+    saveHoverMaterial(planeMats[key]);
+    planeMats[key].color.lerp(new THREE.Color(css('--key')), 0.12);
+  }
+  for (const target of ids) {
+    if (!hoverEligible(target)) continue;
+    const part = blockParts[target] || desParts[target];
+    if (part && target !== selected) brightenEdge(part.edgeMat);
+    // Existing body materials keep their hue. Critical and warning objects stay red and amber.
+    for (const g of Object.values(layerGroups)) g.traverse(o => {
+      if (!o.material?.isMeshStandardMaterial || o.userData.plate) return;
+      let p = o, context;
+      while (p && !context) { context = p.userData.context; p = p.parent; }
+      if (!context?.includes(target)) return;
+      const m = o.material, token = m.userData.themeToken;
+      if (kind === 'o' && token !== '--critical') return;
+      if (kind === 'j' && token === '--critical') return;
+      saveHoverMaterial(m);
+      m.emissive.set(css(['--critical', '--warning'].includes(token) ? token : '--key'));
+      m.emissiveIntensity = Math.max(m.emissiveIntensity, HOVER.emissive);
+    });
+  }
+  for (const L of labels) L.el.classList.toggle('is-hover', ids.has(L.el.dataset.sel) && hoverEligible(L.el.dataset.sel));
+  resultEl.querySelectorAll('[data-result-col]').forEach(el => el.classList.toggle('is-hover', id === 'u:' + el.dataset.resultCol));
+  if (kind === 't' || kind === 'd') {
+    const columns = USER_COLS.filter(c => (kind === 't' ? c.table : c.entity) === key && (!focus || focus.related.has('u:' + c.name)));
+    if (columns.length) {
+      if (!mappingGroup.visible) {
+        saveHoverVisibility(mappingGroup); mappingGroup.visible = true;
+        for (const line of mappingGroup.children) {
+          saveHoverVisibility(line);
+          line.visible = columns.some(c => line.userData.context?.includes('u:' + c.name));
+        }
+      }
+      for (const c of columns) {
+        const m = mapMats[c.name]; saveHoverMaterial(m);
+        m.color.lerp(new THREE.Color(css('--key')), HOVER.mix);
+        m.opacity = Math.max(m.opacity, HOVER.mappingOpacity);
+      }
+    }
+  }
+  if (kind === 'u' && focus?.column !== key) {
+    hoverPreview = key;
+    traces[key].preview.visible = true;
+  }
+}
+function hoverCopy(id) {
+  const [kind, key] = id.split(':');
+  if (kind === 't') return [`${key} · ${fmt(T[key].rows)} rows · ${fmt(T[key].columns.length)} columns`, 'Click to zoom in and read rows'];
+  if (kind === 'u') return [`${key} · from ${USER_COLS.find(c => c.name === key).table}`, 'Click to trace this column to its table'];
+  if (kind === 'j') return [`${JOINS[key].label} · ${fmt(SALES - J[key].unmatched_rows)} matched`, 'Click to see which keys find a match'];
+  if (kind === 'o') return [`${fmt(J[key].unmatched_rows)} sales rows · no ${JOINS[key].parent} match`, 'Click to inspect rows with no match'];
+  if (kind === 'd') return [`${key} · ${fmt(DES[key].n)} records`, 'Click to see how this entity is stored'];
+  if (kind === 'r') {
+    const [from, to] = key.split('-');
+    return [`${from} → ${to} · ${DES_EDGES.find(e => e[0] === from && e[1] === to)[2]}`, 'Click to read this relationship'];
+  }
+  if (kind === 'c') return [`Product facts · copied into ${fmt(SALES)} sales rows`, 'Click to compare copied values with products'];
+  const names = { user: 'User view', design: 'Design', built: 'As built' };
+  const fact = key === 'user' ? `${fmt(D.exercise.rows)} result rows` : key === 'design' ? `${fmt(Object.keys(DES).length)} entities` : `${fmt(Object.keys(T).length)} tables`;
+  return [`${names[key]} · ${fact}`, key === 'user' ? 'Click to read the result rows' : 'Click to explore this layer'];
+}
+function hoveredObjectRect(id, el) {
+  if (el && stage.contains(el)) {
+    const r = el.getBoundingClientRect(), s = stage.getBoundingClientRect();
+    return { left: r.left - s.left, top: r.top - s.top, right: r.right - s.left, bottom: r.bottom - s.top };
+  }
+  const o = pickables.find(o => o.userData.sel === id);
+  if (!o) return null;
+  const box = new THREE.Box3().setFromObject(o), points = [];
+  for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) points.push(projectToStage(new THREE.Vector3(x, y, z)));
+  return { left: Math.min(...points.map(p => p.x)), right: Math.max(...points.map(p => p.x)), top: Math.min(...points.map(p => p.y)), bottom: Math.max(...points.map(p => p.y)) };
+}
+function setHover(id, source, now) {
+  if (!hoverAllowed() || !hoverEligible(id)) { clearHover(); return; }
+  if (hoverId === id && hoverSource?.el === source.el && hoverSource?.keyboard === source.keyboard) {
+    Object.assign(hoverSource, { x: source.x, y: source.y });
+    return;
+  }
+  clearHover();
+  hoverId = id;
+  hoverSource = { ...source, since: now, rect: hoveredObjectRect(id, source.el) };
+  highlightHover(id);
+  const [fact, action] = hoverCopy(id);
+  hoverFact.textContent = fact;
+  hoverAction.textContent = source.keyboard ? action.replace(/^Click/, 'Press Enter') : action;
+  if (!source.panel) {
+    pileTip.hidden = !id.startsWith('o:');
+    if (source.el) {
+      hoverDescription = { el: source.el, previous: source.el.getAttribute('aria-describedby') };
+      source.el.setAttribute('aria-describedby', [hoverDescription.previous, 'hoverCard'].filter(Boolean).join(' '));
+    }
+  }
+}
+function hoverTarget(el) {
+  const target = el.closest?.('[data-sel], [data-result-col], [data-go], [data-hover]');
+  if (!target || (!stage.contains(target) && !panel.contains(target))) return null;
+  const id = target.dataset.sel || (target.dataset.resultCol ? 'u:' + target.dataset.resultCol : target.dataset.go || target.dataset.hover);
+  return { id, el: target, panel: panel.contains(target) };
+}
+function flushHover(now) {
+  if (!hoverAllowed()) { if (hoverId || pendingHover) clearHover(); return; }
+  if (!pendingHover) return;
+  const sample = pendingHover; pendingHover = null;
+  const target = hoverTarget(sample.target);
+  const id = target?.id || (sample.target === renderer.domElement ? pick({ clientX: sample.x, clientY: sample.y }) : null);
+  setHover(id, { el: target?.el || null, panel: target?.panel || false, x: sample.x, y: sample.y, keyboard: false }, now);
+  renderer.domElement.style.cursor = hoverId && sample.target === renderer.domElement ? 'pointer' : 'grab';
+}
+function layoutHoverCard(now) {
+  if (!hoverId || hoverSource.panel || now - hoverSource.since < HOVER.delay) return;
+  hoverCard.hidden = false;
+  const s = stage.getBoundingClientRect(), w = hoverCard.offsetWidth, h = hoverCard.offsetHeight;
+  const { gap, padding: pad } = HOVER, r = hoverSource.rect;
+  const x = hoverSource.keyboard ? (r.left + r.right) / 2 : hoverSource.x - s.left;
+  const y = hoverSource.keyboard ? (r.top + r.bottom) / 2 : hoverSource.y - s.top;
+  const candidates = [[x + gap, y + gap], [x - gap - w, y + gap], [x + gap, y - gap - h], [x - gap - w, y - gap - h]];
+  if (r) candidates.push([r.right + gap, y - h / 2], [r.left - gap - w, y - h / 2], [x - w / 2, r.bottom + gap], [x - w / 2, r.top - gap - h]);
+  const overlap = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+  const cursor = { left: x - 5, top: y - 5, right: x + 5, bottom: y + 5 };
+  // the card should not hide the hovered object's own chips (heavy penalty) or other chips (light penalty)
+  const chipRects = labels.filter(L => !L.el.classList.contains('hidden') && L.el.offsetParent && !L.el.classList.contains('tbl')).map(L => {
+    const c = L.el.getBoundingClientRect();
+    return { left: c.left - s.left, top: c.top - s.top, right: c.right - s.left, bottom: c.bottom - s.top, own: L.el.dataset.sel === hoverId };
+  });
+  const placements = candidates.map(([cx, cy]) => {
+    const left = Math.max(pad, Math.min(stage.clientWidth - w - pad, cx));
+    const top = Math.max(pad, Math.min(stage.clientHeight - h - pad, cy));
+    const box = { left, top, right: left + w, bottom: top + h };
+    const chips = chipRects.reduce((sum, c) => sum + overlap(box, c) * (c.own ? 100 : 15), 0);
+    return { ...box, score: (r ? overlap(box, r) * 100 : 0) + chips + Math.hypot(left - x, top - y), blocked: overlap(box, cursor) > 0 };
+  }).filter(p => !p.blocked).sort((a, b) => a.score - b.score);
+  if (!placements.length || w > stage.clientWidth - pad * 2 || h > stage.clientHeight - pad * 2) { hoverCard.hidden = true; return; }
+  hoverCard.style.left = placements[0].left + 'px'; hoverCard.style.top = placements[0].top + 'px';
+}
+for (const surface of [stage, panel]) {
+  surface.addEventListener('pointermove', ev => {
+    if (ev.buttons) { clearHover(); return; }
+    if (!hoverAllowed()) return;
+    pendingHover = { target: ev.target, x: ev.clientX, y: ev.clientY };
+  });
+  surface.addEventListener('pointerleave', clearHover);
+  surface.addEventListener('pointerout', ev => {
+    const el = hoverSource?.el;
+    if (el && el.contains(ev.target) && !el.contains(ev.relatedTarget)) clearHover();
+    if (ev.target === renderer.domElement && ev.relatedTarget !== renderer.domElement) clearHover();
+  });
+  surface.addEventListener('pointerdown', clearHover, { capture: true });
+  surface.addEventListener('focusin', ev => {
+    const target = hoverTarget(ev.target);
+    if (target && ev.target.matches(':focus-visible')) setHover(target.id, { ...target, keyboard: true }, performance.now());
+  });
+  surface.addEventListener('focusout', clearHover);
+  surface.addEventListener('scroll', clearHover, { capture: true, passive: true });
+}
+hoverMedia.addEventListener('change', clearHover);
+window.addEventListener('blur', clearHover);
+document.addEventListener('visibilitychange', clearHover);
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') clearHover(); });
+renderer.domElement.addEventListener('pointerdown', ev => {
+  down = [ev.clientX, ev.clientY]; stage.classList.add('is-dragging');
+});
 renderer.domElement.addEventListener('pointerup', ev => {
   if (!down) return;
   const moved = Math.hypot(ev.clientX - down[0], ev.clientY - down[1]);
-  down = null;
+  endPointer();
   if (moved > 5) return;
   const s = pick(ev);
   if (s) select(s);
   else if (focus) backFocus();
   else if (!stepState.on) { selected = null; highlight(null); panel.innerHTML = renderOverview(); wirePanel(); }
 });
-const pileTip = document.getElementById('pileTip');
-function showPileTip(sel, ev) {
-  pileTip.hidden = !sel?.startsWith('o:');
-  if (!pileTip.hidden) {
-    const r = stage.getBoundingClientRect();
-    pileTip.style.left = Math.max(10, Math.min(stage.clientWidth - 200, ev.clientX - r.left + 12)) + 'px';
-    pileTip.style.top = Math.max(10, Math.min(stage.clientHeight - 40, ev.clientY - r.top + 16)) + 'px';
-  }
-}
-renderer.domElement.addEventListener('pointermove', ev => {
-  if (down) return;
-  const sel = pick(ev);
-  renderer.domElement.style.cursor = sel ? 'pointer' : 'grab';
-  showPileTip(sel, ev);
-});
-renderer.domElement.addEventListener('pointerleave', () => { pileTip.hidden = true; });
+function endPointer() { down = null; stage.classList.remove('is-dragging'); renderer.domElement.style.cursor = 'grab'; }
+window.addEventListener('pointerup', endPointer);
+window.addEventListener('pointercancel', () => { endPointer(); controlsBusy = false; clearHover(); });
+window.addEventListener('blur', () => { endPointer(); controlsBusy = false; });
 
 /* Wheel and trackpad pinch anywhere over the 3D stage zoom the scene, not the page.
    Labels and cards sit on top of the canvas, so their wheel events never reached the
@@ -1659,10 +1888,6 @@ stage.addEventListener('wheel', ev => {
 }, { capture: true, passive: false });
 // Safari reports trackpad pinch as gesture events; keep them from zooming the page over the stage
 for (const type of ['gesturestart', 'gesturechange', 'gestureend']) stage.addEventListener(type, ev => ev.preventDefault(), { passive: false });
-for (const L of labels.filter(L => L.el.dataset.sel?.startsWith('o:'))) {
-  L.el.addEventListener('pointerenter', ev => showPileTip(L.el.dataset.sel, ev));
-  L.el.addEventListener('pointerleave', () => { pileTip.hidden = true; });
-}
 
 /* ------------------------------------------------------------- panel */
 function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
@@ -1713,7 +1938,7 @@ function colTable(t) {
       const cp = copyBy[c.name];
       extra = `${esc(note)}; differs in ${fmt(cp.differs)} rows`;
     } else extra = esc(extra);
-    return `<tr><td class="c">${esc(c.name)}</td><td>${tagFor(role)}${role === 'fk' ? '&rarr; <code>' + esc(note) + '</code>' : extra}</td><td class="note">${esc(c.type.replace('timestamp without time zone', 'timestamp'))}</td></tr>`;
+    return `<tr><td class="c" data-hover="t:${t}">${esc(c.name)}</td><td>${tagFor(role)}${role === 'fk' ? '&rarr; <code>' + esc(note) + '</code>' : extra}</td><td class="note">${esc(c.type.replace('timestamp without time zone', 'timestamp'))}</td></tr>`;
   }).join('');
   return `<table class="cols"><thead><tr><th>column</th><th>role</th><th>type</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
@@ -1742,7 +1967,7 @@ function renderTable(t) {
     body = `<p>One row per Iowa county with its population. <code>county</code> is unique in all ${T.counties.rows} rows, but this copy has no PRIMARY KEY constraint on it.</p>
     <p class="note">Every county has sales. ${fmt(J.county.null_rows)} sales rows have a blank county (county_number ${esc(D.design.county_code_for_blank)}), so they drop out of the join.</p>`;
   }
-  return `<h2>${t}</h2><p class="kicker">As built &middot; ${fmt(p.rows)} rows &middot; ${p.cols} columns</p>${body}<h3>Columns</h3>${colTable(t)}${sampleBlock(t)}${SRC}`;
+  return `<h2 data-hover="t:${t}">${t}</h2><p class="kicker">As built &middot; ${fmt(p.rows)} rows &middot; ${p.cols} columns</p>${body}<h3>Columns</h3>${colTable(t)}${sampleBlock(t)}${SRC}`;
 }
 
 function renderJoin(k) {
@@ -1818,7 +2043,7 @@ const DES_TEXT = {
     <p class="note">Whether a report should use the category at the time of sale or today's category is a design decision; storing both without saying which is which hides that choice.</p>`,
 };
 function renderDesign(k) {
-  return `<h2>${k}</h2><p class="kicker">Design &middot; ${DES[k].about} &middot; ${fmt(DES[k].n)}</p>${DES_TEXT[k]()}${SRC}`;
+  return `<h2 data-hover="d:${k}">${k}</h2><p class="kicker">Design &middot; ${DES[k].about} &middot; ${fmt(DES[k].n)}</p>${DES_TEXT[k]()}${SRC}`;
 }
 function renderRel(id) {
   const [from, to] = id.split('-');
@@ -1834,7 +2059,7 @@ function renderRel(id) {
 function renderUserCol(name) {
   const c = USER_COLS.find(x => x.name === name);
   return `<h2>${name}</h2><p class="kicker">User view &middot; one of the five columns in the result</p>
-  <div class="chain"><span>${name}</span><em>&rarr;</em><span>${c.entity}</span><em>&rarr;</em><span class="mono">${c.table}.${name}</span></div>
+  <div class="chain"><button type="button" data-go="u:${name}">${name}</button><em>&rarr;</em><button type="button" data-go="d:${c.entity}">${c.entity}</button><em>&rarr;</em><button type="button" class="mono" data-go="t:${c.table}">${c.table}.${name}</button></div>
   <p>The user sees one column. The design says it describes a ${c.entity.toLowerCase()}, and the stored value comes from <code>${c.table}</code>${c.table === 'sales' ? ', the primary table of the query, so no join is needed' : ', reached through <code>' + esc(c.via) + '</code>'}.</p>
   ${name === 'store' ? '<p class="note">The task asks for store from the stores table, so the query uses <code>b.store</code>. With an INNER JOIN it always equals <code>a.store</code>.</p>' : ''}
   ${SRC}`;
@@ -1851,6 +2076,11 @@ function renderPanel(sel) {
   return renderOverview();
 }
 function wirePanel() {
+  // Exact names only. SQL aliases and bare column names have no inferred target.
+  panel.querySelectorAll('code').forEach(el => {
+    const [table, column, extra] = el.textContent.trim().split('.');
+    if (T[table] && !extra && (!column || T[table].columns.some(c => c.name === column))) el.dataset.hover = 't:' + table;
+  });
   panel.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => select(b.dataset.go)));
 }
 
@@ -1962,6 +2192,7 @@ function renderTableView() {
   ${SRC}`;
 }
 document.getElementById('tvBtn').addEventListener('click', ev => {
+  clearHover();
   const on = ev.currentTarget.getAttribute('aria-pressed') !== 'true';
   ev.currentTarget.setAttribute('aria-pressed', String(on));
   document.body.classList.toggle('tv', on);
@@ -1974,6 +2205,7 @@ document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click'
 
 /* Theme changes recolour the current scene without rebuilding navigation state. */
 function refreshTheme() {
+  clearHover();
   applyTheme();
   highlight(selected);
   highlightWalkStep();
@@ -1992,6 +2224,7 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
 
 /* ------------------------------------------------------------- loop */
 function resize() {
+  clearHover();
   const w = stage.clientWidth, h = stage.clientHeight;
   if (!w || !h) return;
   stage.style.setProperty('--stage-width', w + 'px');
@@ -2016,11 +2249,13 @@ function frame(now) {
     if (t >= 1) anim = null;
   }
   controls.update();
+  flushHover(now);
   flowTrace(now);
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
   layoutSceneLabels();
   layoutFocusCards();
+  layoutHoverCard(now);
   requestAnimationFrame(frame);
 }
 
@@ -2035,7 +2270,7 @@ if (hashParams.get('tv') === '1') document.getElementById('tvBtn').click();
 requestAnimationFrame(frame);
 window.__ex = {
   get effects() { return { mode: FX.mode, shadowMaps: renderer.shadowMap.enabled, environment: !!scene.environment, contactShadows: !!contactTexture }; },
-  get state() { return { view, selected, focus: focus?.sel || null, animating: !!anim }; },
+  get state() { return { view, selected, focus: focus?.sel || null, animating: !!anim, hover: hoverId, hoverPreview }; },
   get cameraDistance() { return camera.position.distanceTo(controls.target); }, // test hook for wheel and pinch zoom
   // test hook: screen position (CSS px, page coordinates) of the centre of a clickable object
   screenOf(sel) {
