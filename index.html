@@ -1627,6 +1627,38 @@ renderer.domElement.addEventListener('pointermove', ev => {
   showPileTip(sel, ev);
 });
 renderer.domElement.addEventListener('pointerleave', () => { pileTip.hidden = true; });
+
+/* Wheel and trackpad pinch anywhere over the 3D stage zoom the scene, not the page.
+   Labels and cards sit on top of the canvas, so their wheel events never reached the
+   controls and the browser zoomed the whole page. A plain wheel over a card that can
+   scroll still scrolls the card. Header and side panel keep normal browser zoom. */
+const forwardedWheel = new WeakSet();
+function scrollsInside(el, ev) {
+  for (let n = el; n && n !== stage; n = n.parentElement) {
+    const cs = getComputedStyle(n);
+    const canY = /(auto|scroll)/.test(cs.overflowY) && n.scrollHeight > n.clientHeight + 1;
+    const canX = /(auto|scroll)/.test(cs.overflowX) && n.scrollWidth > n.clientWidth + 1;
+    if (canY && ((ev.deltaY < 0 && n.scrollTop > 0) || (ev.deltaY > 0 && n.scrollTop + n.clientHeight < n.scrollHeight - 1))) return true;
+    if (canX && Math.abs(ev.deltaX) > Math.abs(ev.deltaY)) return true;
+  }
+  return false;
+}
+stage.addEventListener('wheel', ev => {
+  if (forwardedWheel.has(ev)) return;
+  const canvasEl = renderer.domElement;
+  if (ev.target === canvasEl) { ev.preventDefault(); return; } // the controls handle it on the canvas
+  if (!ev.ctrlKey && scrollsInside(ev.target, ev)) return;    // let a scrollable card scroll
+  ev.preventDefault();
+  ev.stopPropagation();
+  const fwd = new WheelEvent('wheel', {
+    deltaX: ev.deltaX, deltaY: ev.deltaY, deltaZ: ev.deltaZ, deltaMode: ev.deltaMode, ctrlKey: ev.ctrlKey,
+    clientX: ev.clientX, clientY: ev.clientY, screenX: ev.screenX, screenY: ev.screenY, bubbles: true, cancelable: true
+  });
+  forwardedWheel.add(fwd);
+  canvasEl.dispatchEvent(fwd);
+}, { capture: true, passive: false });
+// Safari reports trackpad pinch as gesture events; keep them from zooming the page over the stage
+for (const type of ['gesturestart', 'gesturechange', 'gestureend']) stage.addEventListener(type, ev => ev.preventDefault(), { passive: false });
 for (const L of labels.filter(L => L.el.dataset.sel?.startsWith('o:'))) {
   L.el.addEventListener('pointerenter', ev => showPileTip(L.el.dataset.sel, ev));
   L.el.addEventListener('pointerleave', () => { pileTip.hidden = true; });
@@ -2004,6 +2036,7 @@ requestAnimationFrame(frame);
 window.__ex = {
   get effects() { return { mode: FX.mode, shadowMaps: renderer.shadowMap.enabled, environment: !!scene.environment, contactShadows: !!contactTexture }; },
   get state() { return { view, selected, focus: focus?.sel || null, animating: !!anim }; },
+  get cameraDistance() { return camera.position.distanceTo(controls.target); }, // test hook for wheel and pinch zoom
   // test hook: screen position (CSS px, page coordinates) of the centre of a clickable object
   screenOf(sel) {
     const o = pickables.find(x => x.userData.sel === sel);
