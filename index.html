@@ -23,7 +23,7 @@ window.EXPLORER_STYLE = (() => {
           key: '#2365ac', critical: '#b52f43', warning: '#e7b84a', 'warning-ink': '#805900',
           block: '#faf8ef', 'block-fact': '#bcbeb0', 'block-edge': '#6f7665',
           plane: '#dfdfd3', 'code-bg': '#e9e7df', focus: '#272822',
-          shadow: '#35382f', 'tag-critical-ink': '#ffffff', 'tag-key-ink': '#ffffff',
+          cta: '#176852', 'cta-ink': '#ffffff', shadow: '#35382f', 'tag-critical-ink': '#ffffff', 'tag-key-ink': '#ffffff',
           'card-shadow': '0 12px 32px #35382f14, 0 2px 5px #35382f0a',
           'label-shadow': '0 2px 5px #35382f0b'
         },
@@ -33,7 +33,7 @@ window.EXPLORER_STYLE = (() => {
           key: '#82bafa', critical: '#f38190', warning: '#f5d578', 'warning-ink': '#f5d578',
           block: '#9ca791', 'block-fact': '#69765c', 'block-edge': '#d0d7be',
           plane: '#4c5542', 'code-bg': '#353a30', focus: '#f1f0e6',
-          shadow: '#000000', 'tag-critical-ink': '#21191b', 'tag-key-ink': '#182431',
+          cta: '#80dfc4', 'cta-ink': '#12352b', shadow: '#000000', 'tag-critical-ink': '#21191b', 'tag-key-ink': '#182431',
           'card-shadow': '0 14px 36px #00000030, 0 2px 5px #00000020',
           'label-shadow': '0 2px 6px #00000020'
         }
@@ -106,7 +106,7 @@ window.EXPLORER_STYLE = (() => {
           key: '#215eaa', critical: '#a92b42', warning: '#dbae40', 'warning-ink': '#795500',
           block: '#b0b0ac', 'block-fact': '#777773', 'block-edge': '#595955',
           plane: '#babab5', 'code-bg': '#e1e1dc', focus: '#252525',
-          shadow: '#272725', 'tag-critical-ink': '#ffffff', 'tag-key-ink': '#ffffff',
+          cta: '#176852', 'cta-ink': '#ffffff', shadow: '#272725', 'tag-critical-ink': '#ffffff', 'tag-key-ink': '#ffffff',
           'card-shadow': '0 8px 22px #1820191c', 'label-shadow': 'none'
         },
         dark: {
@@ -115,7 +115,7 @@ window.EXPLORER_STYLE = (() => {
           key: '#83bafb', critical: '#ff6b6b', warning: '#f4d786', 'warning-ink': '#f4d786',
           block: '#969690', 'block-fact': '#666660', 'block-edge': '#dbdbd2',
           plane: '#62625b', 'code-bg': '#3a3a34', focus: '#f1f1ed',
-          shadow: '#000000', 'tag-critical-ink': '#23171b', 'tag-key-ink': '#162536',
+          cta: '#80dfc4', 'cta-ink': '#12352b', shadow: '#000000', 'tag-critical-ink': '#23171b', 'tag-key-ink': '#162536',
           'card-shadow': '0 12px 32px #00000048', 'label-shadow': 'none'
         }
       },
@@ -231,17 +231,13 @@ window.EXPLORER_STYLE = (() => {
   .bar .title { margin-right: auto; min-width: 0; }
   .bar h1 { font-family: var(--heading-font); font-size: var(--title-size); line-height: 1.3; margin: 0; font-weight: var(--heading-weight); letter-spacing: var(--heading-tracking); }
   .bar .sub { margin: 2px 0 0; color: var(--ink-2); font-size: 12.5px; }
-  .seg { display: inline-flex; border: 1px solid var(--axis); border-radius: var(--control-radius); overflow: hidden; }
+  .seg { display: inline-flex; border: 1px solid var(--key); border-radius: 8px; overflow: hidden; background: color-mix(in srgb, var(--key) 12%, var(--surface)); }
   .seg button {
     border: 0; background: transparent; padding: var(--control-padding); cursor: pointer; font-size: var(--control-size);
-    border-right: 1px solid var(--axis);
+    border-right: 1px solid color-mix(in srgb, var(--key) 30%, var(--surface));
   }
   .seg button:last-child { border-right: 0; }
-  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
-  :root[data-theme="dark"] #themeSwitch [data-theme-choice="dark"],
-  :root[data-theme="light"] #themeSwitch [data-theme-choice="light"] { background: var(--ink); color: var(--surface); }
-  :root[data-theme="dark"] #themeSwitch [data-theme-choice="light"],
-  :root[data-theme="light"] #themeSwitch [data-theme-choice="dark"] { background: transparent; color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: var(--key); color: var(--tag-key-ink); font-weight: 650; }
   .btn {
     border: 1px solid var(--axis); background: var(--surface); border-radius: var(--control-radius);
     padding: var(--control-padding); cursor: pointer; font-size: var(--control-size);
@@ -309,7 +305,7 @@ window.EXPLORER_STYLE = (() => {
   .read i.bar3 { width: 9px; height: 14px; border: 1px solid var(--block-edge); background: var(--block); }
 
   .legend {
-    position: absolute; left: 14px; bottom: 12px; font-size: var(--small-size); color: var(--ink-2);
+    position: absolute; right: 14px; bottom: 12px; z-index: 5; font-size: var(--small-size); color: var(--ink-2);
     background: color-mix(in srgb, var(--surface) var(--legend-alpha), transparent); padding: var(--legend-padding); border: 1px solid var(--hair); border-radius: var(--legend-radius);
     display: grid; grid-template-columns: auto 1fr; gap: 3px 8px; align-items: center; max-width: 330px;
   }
@@ -318,15 +314,16 @@ window.EXPLORER_STYLE = (() => {
   .legend i.warn { border-top: 2px solid var(--warning); }
   .legend i.map { border-top: 1px solid var(--muted); }
   .legend i.bar3 { width: 9px; height: 14px; border: 1px solid var(--block-edge); background: var(--block); }
-  .hint { position: absolute; right: 14px; bottom: 12px; font-size: var(--small-size); color: var(--muted); }
+  .hint { position: absolute; left: 14px; top: 14px; max-width: min(330px, calc(100% - 246px)); font-size: var(--small-size); color: var(--muted); line-height: 1.5; pointer-events: none; }
   .steps {
-    position: absolute; left: 50%; top: 12px; transform: translateX(-50%);
+    position: absolute; left: 50%; top: 76px; z-index: 6; transform: translateX(-50%);
     display: flex; gap: 4px; align-items: center; background: var(--surface);
     border: 1px solid var(--axis); border-radius: var(--control-radius); padding: 4px;
   }
   .steps[hidden] { display: none; }
   .steps button { border: 0; background: transparent; width: 30px; height: 28px; border-radius: var(--control-radius); cursor: pointer; font-variant-numeric: tabular-nums; }
-  .steps button[aria-current="step"] { background: var(--ink); color: var(--surface); }
+  .steps button[aria-current="step"] { background: var(--key); color: var(--tag-key-ink); font-weight: 700; }
+  .steps button[data-progress="done"] { color: var(--key); box-shadow: inset 0 -2px var(--key); }
   .steps .arrow { width: 34px; color: var(--ink-2); }
 
   /* Focus stays in the stage; leaders keep screen-facing cards tied to their objects. */
@@ -374,7 +371,7 @@ window.EXPLORER_STYLE = (() => {
   .lab.tbl th button { color: inherit; font: inherit; border: 0; padding: 2px 0; background: none; cursor: pointer; }
   .lab.tbl th button[aria-pressed="true"] { color: var(--key); }
   .trace-mode .scene-card { max-height: calc(var(--stage-height, 800px) * .36); }
-  .path-label { background: var(--surface); border: 1px solid var(--key); border-radius: var(--control-radius); padding: 5px 8px; color: var(--key); font-size: 12px; white-space: nowrap; pointer-events: none; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+  .path-label { background: var(--surface); border: 1px solid var(--key); border-radius: var(--control-radius); padding: 5px 8px; color: var(--key); font-size: 12px; white-space: nowrap; pointer-events: auto; cursor: pointer; text-align: left; font-family: inherit; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
   .path-label[hidden] { display: none !important; }
   .trace-mode .path-label { white-space: normal; overflow-wrap: anywhere; text-overflow: clip; }
   .hover-card { position: absolute; z-index: 40; pointer-events: none; width: max-content; max-width: min(320px, calc(100% - 24px)); padding: 9px 12px; border: 1px solid var(--axis); border-radius: var(--control-radius); background: var(--surface); box-shadow: var(--card-shadow); font-size: 12px; line-height: 1.5; }
@@ -456,9 +453,47 @@ window.EXPLORER_STYLE = (() => {
   .btn:hover, .seg button:not([aria-pressed="true"]):hover {
     background: color-mix(in srgb, var(--ink) var(--hover-mix), var(--surface));
   }
+  .walk-cta, .walk-cta:hover { background: var(--cta); color: var(--cta-ink); border-color: var(--cta); border-radius: 999px; font-weight: 650; padding: 8px 15px; }
+  .walk-cta:hover { box-shadow: inset 0 0 0 2px var(--cta-ink); }
+  .walk-cta .play { margin-right: 5px; }
+  .theme-toggle { width: 36px; height: 36px; padding: 7px; display: inline-grid; place-items: center; margin-left: auto; flex-shrink: 0; }
+  .theme-toggle svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  :root[data-theme="dark"] .theme-toggle .moon, :root[data-theme="light"] .theme-toggle .sun { display: none; }
+  .zoom-bar { position: absolute; top: 12px; right: 14px; z-index: 20; display: flex; align-items: center; gap: 3px; padding: 4px; width: 214px; border: 1px solid var(--hair); border-radius: var(--control-radius); background: var(--surface); }
+  .zoom-bar button { display: grid; place-items: center; border: 0; background: transparent; width: 30px; height: 30px; padding: 0; color: var(--ink); cursor: pointer; font-size: 20px; }
+  .zoom-bar button:hover { background: var(--code-bg); }
+  .zoom-bar button:disabled, .walk-actions button:disabled, .steps button:disabled { opacity: .45; cursor: default; }
+  .zoom-bar input { width: 100%; min-width: 0; accent-color: var(--key); cursor: pointer; }
+  .zoom-bar #zoomFit { font-size: 11px; width: 34px; }
+  .zoom-bar button { flex-shrink: 0; }
+  .step-number { display: inline-block; min-width: 1.35em; border-radius: 4px; background: var(--key); color: var(--tag-key-ink); text-align: center; }
+  .walk-progress { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; margin: 14px 0; padding: 0; list-style: none; }
+  .panel .walk-progress { padding: 0; }
+  .walk-progress button { width: 100%; padding: 4px; border: 1px solid var(--axis); border-radius: 3px; background: transparent; color: var(--ink-2); cursor: pointer; }
+  .walk-progress [data-progress="done"] { border-color: var(--key); color: var(--key); }
+  .walk-progress [aria-current="step"] { background: var(--key); color: var(--tag-key-ink); border-color: var(--key); font-weight: 700; }
+  .walk-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 20px 0 10px; }
+  .walk-actions [data-next], .walk-actions [data-go] { margin-left: auto; }
+  .panel-footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--hair); font-size: 12px; }
+  .panel-footer a { color: var(--ink-2); text-underline-offset: 3px; }
+  .lineage-cell { background: color-mix(in srgb, var(--key) 18%, var(--surface)); box-shadow: inset 0 -2px var(--key); font-weight: 650; }
+  .lineage-card .lineage-join { border-left: 2px solid var(--key); padding: 7px 9px; margin: 10px 0; background: var(--code-bg); overflow-wrap: anywhere; }
+  .lineage-join .match { display: block; margin-top: 3px; color: var(--key); }
+  .path-label.is-hover, .path-label[aria-expanded="true"] { box-shadow: 0 0 0 1px var(--key); }
+  #hoverDetail[hidden] { display: none; }
+  @media (max-width: 860px) {
+    .bar { gap: 10px; }
+    .bar .title { width: calc(100% - 50px); order: 0; }
+    .theme-toggle { order: 1; }
+    .bar .seg { order: 2; max-width: 100%; }
+    .walk-cta { order: 3; }
+    .seg button { padding: 6px 9px; }
+    .zoom-bar { width: 198px; right: 12px; }
+    .steps { top: 64px; }
+    #tableView .grid { grid-template-columns: minmax(0, 1fr); }
+  }
   .lab.layer { background: transparent; border-color: transparent; box-shadow: none; }
   .lab.tbl { font-family: var(--body-font); letter-spacing: normal; }
-  .hint { bottom: 10px; }
   .scene-card, .lab.tbl { scrollbar-width: thin; scrollbar-color: var(--axis) transparent; }
   @media (prefers-reduced-motion: reduce) { .lab { transition: none; } }
   :root.static .lab { transition: none; }
@@ -482,12 +517,11 @@ window.EXPLORER_STYLE = (() => {
     <button type="button" data-view="design" aria-pressed="false">Design</button>
     <button type="button" data-view="built" aria-pressed="false">As built</button>
   </div>
-  <button type="button" class="btn" id="walkBtn" aria-pressed="false">Walk the exercise</button>
-  <button type="button" class="btn" id="tvBtn" aria-pressed="false">Table view</button>
-  <div class="seg" id="themeSwitch" role="group" aria-label="Color theme">
-    <button type="button" data-theme-choice="dark" aria-pressed="true">Dark</button>
-    <button type="button" data-theme-choice="light" aria-pressed="false">Light</button>
-  </div>
+  <button type="button" class="btn walk-cta" id="walkBtn" aria-pressed="false"><span class="play" aria-hidden="true">▶</span> Walk the exercise</button>
+  <button type="button" class="btn theme-toggle" id="themeToggle" aria-label="Switch to light theme" title="Switch to light theme">
+    <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4 19 5"/></svg>
+    <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></svg>
+  </button>
 </header>
 
 <main class="layout">
@@ -496,7 +530,13 @@ window.EXPLORER_STYLE = (() => {
     <svg class="focus-leaders" id="focusLeaders" aria-hidden="true"></svg>
     <svg class="focus-leaders built-leaders" id="builtLeaders" aria-hidden="true"></svg>
     <button type="button" class="btn back" id="backBtn" hidden aria-label="Back to previous view">&larr; Back <span class="note">Esc</span></button>
-    <div class="hover-card" id="hoverCard" role="tooltip" hidden><strong id="hoverFact"></strong><span id="hoverAction"></span><span id="pileTip" hidden>1 cube is about 100 rows</span></div>
+    <div class="hover-card" id="hoverCard" role="tooltip" hidden><strong id="hoverFact"></strong><span id="hoverDetail" hidden></span><span id="hoverAction"></span><span id="pileTip" hidden>1 cube is about 100 rows</span></div>
+    <div class="zoom-bar" id="zoomBar" role="group" aria-label="Zoom controls">
+      <button type="button" id="zoomOut" aria-label="Zoom out" title="Zoom out">−</button>
+      <input type="range" id="zoomRange" min="12" max="120" step="0.1" value="80" dir="rtl" aria-label="Camera distance" aria-valuetext="Camera distance 80">
+      <button type="button" id="zoomIn" aria-label="Zoom in" title="Zoom in">+</button>
+      <button type="button" id="zoomFit" aria-label="Fit current view" title="Fit current view">Fit</button>
+    </div>
     <nav class="steps" id="steps" hidden aria-label="Exercise steps"></nav>
     <div class="legend" id="legend" aria-label="Legend">
       <i class="bar3"></i><span>Block height = rows (log scale), width = columns</span>
@@ -505,12 +545,12 @@ window.EXPLORER_STYLE = (() => {
       <i class="warn"></i><span>Product facts copied into sales</span>
       <i class="map"></i><span>Mapping between layers</span>
     </div>
-    <div class="hint">Drag to rotate &middot; scroll to zoom &middot; click a table, a line or a cube pile</div>
+    <div class="hint">Drag to rotate &middot; scroll or pinch to zoom &middot; click a table, a line or a cube pile</div>
   </section>
-  <aside class="panel" id="panel" aria-live="polite"></aside>
+  <aside class="panel" id="panel" aria-live="polite"><footer class="panel-footer"><a href="#tv=1" id="textVersion">Text version</a></footer></aside>
 </main>
 
-<section id="tableView" hidden aria-label="Table view"></section>
+<section id="tableView" hidden aria-label="Text version"></section>
 
 <script id="data" type="application/json">{"source":"local PostgreSQL copy of the four CourseWorks CSV files (iowa_local)","tables":{"sales":{"rows":3049913,"columns":[{"name":"date","type":"timestamp without time zone"},{"name":"convenience_store","type":"text"},{"name":"store","type":"integer"},{"name":"county_number","type":"text"},{"name":"county","type":"text"},{"name":"category","type":"text"},{"name":"category_name","type":"text"},{"name":"vendor_no","type":"text"},{"name":"vendor","type":"text"},{"name":"item","type":"integer"},{"name":"description","type":"text"},{"name":"pack","type":"integer"},{"name":"liter_size","type":"integer"},{"name":"state_btl_cost","type":"money"},{"name":"btl_price","type":"money"},{"name":"bottle_qty","type":"integer"},{"name":"total","type":"numeric"}]},"stores":{"rows":1973,"columns":[{"name":"store","type":"integer"},{"name":"name","type":"text"},{"name":"store_status","type":"text"},{"name":"store_address","type":"text"},{"name":"address_info","type":"text"}]},"products":{"rows":9977,"columns":[{"name":"item_no","type":"integer"},{"name":"category_name","type":"text"},{"name":"item_description","type":"text"},{"name":"vendor","type":"integer"},{"name":"vendor_name","type":"text"},{"name":"bottle_size","type":"integer"},{"name":"pack","type":"integer"},{"name":"inner_pack","type":"integer"},{"name":"age","type":"text"},{"name":"proof","type":"text"},{"name":"list_date","type":"timestamp without time zone"},{"name":"upc","type":"text"},{"name":"scc","type":"text"},{"name":"bottle_price","type":"money"},{"name":"shelf_price","type":"numeric"},{"name":"case_cost","type":"numeric"}]},"counties":{"rows":99,"columns":[{"name":"county","type":"text"},{"name":"population","type":"integer"}]}},"constraints":[{"table":"products","def":"PRIMARY KEY (item_no)"},{"table":"stores","def":"PRIMARY KEY (store)"}],"keys":{"counties":{"rows":99,"distinct":99},"stores":{"rows":1973,"distinct":1973},"products":{"rows":9977,"distinct":9977}},"samples":{"sales":[{"date":"2014-01-02T00:00:00","convenience_store":null,"store":2106,"county_number":"7","county":"Black Hawk","category":"1012200","category_name":"SCOTCH WHISKIES","vendor_no":"55","vendor":"Sazerac North America","item":8827,"description":"Lauder's","pack":12,"liter_size":1000,"state_btl_cost":"$6.14","btl_price":"$9.21","bottle_qty":12,"total":110.52},{"date":"2014-01-02T00:00:00","convenience_store":null,"store":2106,"county_number":"7","county":"Black Hawk","category":"1012200","category_name":"SCOTCH WHISKIES","vendor_no":"55","vendor":"Sazerac North America","item":8827,"description":"Lauder's","pack":12,"liter_size":1000,"state_btl_cost":"$6.14","btl_price":"$9.21","bottle_qty":12,"total":110.52},{"date":"2014-01-02T00:00:00","convenience_store":null,"store":2106,"county_number":"7","county":"Black Hawk","category":"1012100","category_name":"CANADIAN WHISKIES","vendor_no":"260","vendor":"Diageo Americas","item":11297,"description":"Crown Royal Canadian Whisky","pack":12,"liter_size":1000,"state_btl_cost":"$18.25","btl_price":"$27.37","bottle_qty":12,"total":328.44}],"stores":[{"store":2106,"name":"Hillstreet News and Tobacco","store_status":"A","store_address":"2217 College\nCedar Falls, IA 506130000\n(42.51716928600007, -92.45583783899997)","address_info":null},{"store":2112,"name":"Mike's Liquors","store_status":"I","store_address":"407 Sharp St.\nGlenwood, IA 515340000\n(41.04631266100006, -95.74218014299998)","address_info":null},{"store":2113,"name":"Jamboree Foods","store_status":"A","store_address":"1119 Market St. Box 71\nGowrie, IA 505430000\n(42.280542454000056, -94.28941088599998)","address_info":null}],"products":[{"item_no":185,"category_name":"DECANTERS & SPECIALTY PACKAGES","item_description":"Bookers Bourbon W/leather Cigar Case","vendor":65,"vendor_name":"Jim Beam Brands","bottle_size":750,"pack":6,"inner_pack":1,"age":null,"proof":"125","list_date":"1997-10-01T00:00:00","upc":null,"scc":null,"bottle_price":"$26.79","shelf_price":40.19,"case_cost":160.76},{"item_no":350,"category_name":"DECANTERS & SPECIALTY PACKAGES","item_description":"Evan Williams Single Barrel Gift Set","vendor":259,"vendor_name":"Heaven Hill Distilleries Inc.","bottle_size":750,"pack":6,"inner_pack":1,"age":null,"proof":"86","list_date":"1996-09-01T00:00:00","upc":null,"scc":null,"bottle_price":"$13.74","shelf_price":20.61,"case_cost":82.45},{"item_no":351,"category_name":"DECANTERS & SPECIALTY PACKAGES","item_description":"Evan Williams Sng Bbl W/barrel Flask","vendor":259,"vendor_name":"Heaven Hill Distilleries Inc.","bottle_size":750,"pack":6,"inner_pack":1,"age":null,"proof":"87","list_date":"2010-07-01T00:00:00","upc":null,"scc":null,"bottle_price":"$14.24","shelf_price":21.36,"case_cost":85.45}],"counties":[{"county":"Adair","population":7682},{"county":"Adams","population":4029},{"county":"Allamakee","population":14330}]},"joins":{"store":{"unmatched_rows":6459,"unmatched_keys":31,"parents_never_used":652},"item":{"unmatched_rows":1120,"unmatched_keys":88,"parents_never_used":6350},"county":{"unmatched_rows":1719,"null_rows":1719,"parents_never_used":0},"all_inner_kept":3040632},"design":{"vendors":271,"categories":69,"stores_in_sales":1352,"county_code_for_blank":"0","date_min":"2014-01-02","date_max":"2015-02-26","sales_total":392293023.61},"multi_county_stores":[{"store":3592,"counties":["Hardin","Webster"],"rows":4481},{"store":4963,"counties":["Cedar","Muscatine"],"rows":4087},{"store":3950,"counties":["Iowa","Marshall"],"rows":2094},{"store":4326,"counties":["Cedar","Hamilton"],"rows":830},{"store":5080,"counties":["Cedar","Clay"],"rows":379},{"store":4996,"counties":["Dubuque","Emmet"],"rows":237},{"store":5085,"counties":["Black Hawk","Cedar"],"rows":205},{"store":5088,"counties":["Cedar","Sioux"],"rows":88}],"copies":[{"sales_col":"category_name","products_col":"category_name","differs":2285,"compared":3048793,"examples":[{"in_sales":"DECANTERS & SPECIALTY PACKAGES","in_products":"MISC. IMPORTED CORDIALS & LIQUEURS","rows":718},{"in_sales":"IMPORTED GRAPE BRANDIES","in_products":"DECANTERS & SPECIALTY PACKAGES","rows":286},{"in_sales":"SCOTCH WHISKIES","in_products":"SINGLE MALT SCOTCH","rows":184}]},{"sales_col":"vendor_no","products_col":"vendor","differs":34896,"compared":3048793,"examples":[{"in_sales":"350","in_products":"434","rows":16546},{"in_sales":"10","in_products":"305","rows":8572},{"in_sales":"461","in_products":"65","rows":3524}]},{"sales_col":"vendor","products_col":"vendor_name","differs":1141967,"compared":3048793,"examples":[{"in_sales":"Luxco-St Louis","in_products":"Luxco-st Louis","rows":278401},{"in_sales":"Pernod Ricard USA/Austin Nichols","in_products":"Pernod Ricard Usa/austin Nichols","rows":192592},{"in_sales":"Brown-Forman Corporation","in_products":"Brown-forman Corporation","rows":139106}]},{"sales_col":"description","products_col":"item_description","differs":59953,"compared":3048793,"examples":[{"in_sales":"Five O'clock","in_products":"Five O'clock Vodka","rows":31836},{"in_sales":"Five O'clock PET","in_products":"Five O'clock PET Vodka","rows":5565},{"in_sales":"Five O'clock","in_products":"Five O'clock Gin","rows":4145}]},{"sales_col":"pack","products_col":"pack","differs":3275,"compared":3048793,"examples":[{"in_sales":"10","in_products":"12","rows":1402},{"in_sales":"12","in_products":"24","rows":1236},{"in_sales":"44","in_products":"48","rows":264}]},{"sales_col":"liter_size","products_col":"bottle_size","differs":679,"compared":3048793,"examples":[{"in_sales":"100","in_products":"1200","rows":204},{"in_sales":"500","in_products":"600","rows":176},{"in_sales":"600","in_products":"500","rows":128}]},{"sales_col":"state_btl_cost","products_col":"bottle_price","differs":553599,"compared":3048793,"examples":[{"in_sales":"$6.50","in_products":"$6.25","rows":26607},{"in_sales":"$10.45","in_products":"$9.70","rows":21701},{"in_sales":"$8.75","in_products":"$9.00","rows":21161}]},{"sales_col":"btl_price","products_col":"shelf_price","differs":881969,"compared":3048793,"examples":[{"in_sales":"12.37","in_products":"12.38","rows":29933},{"in_sales":"7.84","in_products":"7.85","rows":17909},{"in_sales":"9.74","in_products":"9.50","rows":16429}]}],"copies_loose":{"vendor_ignoring_case":141682,"description_ignoring_case_and_punctuation":47888},"join_examples":{"store":{"unmatched":[{"key":2670,"rows":1551},{"key":5102,"rows":717},{"key":2671,"rows":453}],"matched":[{"key":2633,"parent_label":"Hy-vee #3 / Bdi / Des Moines","rows":29465},{"key":4829,"parent_label":"Central City 2","rows":25827},{"key":2512,"parent_label":"Hy-vee Wine and Spirits / Iowa City","rows":24038}]},"item":{"unmatched":[{"key":69715,"sales_label":"Dr. McGillicuddy's Peach","rows":101},{"key":43352,"sales_label":"Captain Morgan Pineapple","rows":77},{"key":43314,"sales_label":"Captain Morgan Grapefruit","rows":75}],"matched":[{"key":11788,"parent_label":"Black Velvet","rows":31904},{"key":36308,"parent_label":"Hawkeye Vodka","rows":31105},{"key":35918,"parent_label":"Five O'clock Vodka","rows":23148}]},"county":{"unmatched":[{"key":"(blank)","code":"0","rows":1719}],"matched":[{"key":"Polk","parent_label":430640,"rows":561746},{"key":"Linn","parent_label":211226,"rows":251270},{"key":"Scott","parent_label":165224,"rows":188320}]}},"samples5":{"sales":[{"date":"2014-01-02","store":2106,"county":"Black Hawk","item":8827,"description":"Lauder's","bottle_qty":12,"total":110.52},{"date":"2014-01-02","store":2106,"county":"Black Hawk","item":8827,"description":"Lauder's","bottle_qty":12,"total":110.52},{"date":"2014-01-02","store":2106,"county":"Black Hawk","item":11297,"description":"Crown Royal Canadian Whisky","bottle_qty":12,"total":328.44},{"date":"2014-01-02","store":2106,"county":"Black Hawk","item":11297,"description":"Crown Royal Canadian Whisky","bottle_qty":12,"total":328.44},{"date":"2014-01-02","store":2106,"county":"Black Hawk","item":11776,"description":"Black Velvet","bottle_qty":12,"total":94.08}],"stores":[{"store":2106,"name":"Hillstreet News and Tobacco","store_status":"A","store_address":"2217 College\nCedar Falls, IA 506130000\n(42.51716928600007, -92.45583783899997)","address_info":null},{"store":2112,"name":"Mike's Liquors","store_status":"I","store_address":"407 Sharp St.\nGlenwood, IA 515340000\n(41.04631266100006, -95.74218014299998)","address_info":null},{"store":2113,"name":"Jamboree Foods","store_status":"A","store_address":"1119 Market St. Box 71\nGowrie, IA 505430000\n(42.280542454000056, -94.28941088599998)","address_info":null},{"store":2119,"name":"Manly Liquor Store","store_status":"I","store_address":"133 East Main\nManly, IA 504560000\n(43.286863132000065, -93.20244674199995)","address_info":null},{"store":2130,"name":"Sycamore Convenience","store_status":"A","store_address":"617 Sycamore\nWaterloo, IA 507030000\n(42.49783399700004, -92.33531492199995)","address_info":null}],"products":[{"item_no":185,"item_description":"Bookers Bourbon W/leather Cigar Case","category_name":"DECANTERS & SPECIALTY PACKAGES","vendor_name":"Jim Beam Brands","bottle_size":750,"case_cost":160.76},{"item_no":350,"item_description":"Evan Williams Single Barrel Gift Set","category_name":"DECANTERS & SPECIALTY PACKAGES","vendor_name":"Heaven Hill Distilleries Inc.","bottle_size":750,"case_cost":82.45},{"item_no":351,"item_description":"Evan Williams Sng Bbl W/barrel Flask","category_name":"DECANTERS & SPECIALTY PACKAGES","vendor_name":"Heaven Hill Distilleries Inc.","bottle_size":750,"case_cost":85.45},{"item_no":380,"item_description":"Bourbon Heritage Sampler Pack","category_name":"STRAIGHT BOURBON WHISKIES","vendor_name":"Diageo Americas","bottle_size":251,"case_cost":121.91},{"item_no":383,"item_description":"Bourbon Heritage Multi-Pack","category_name":"STRAIGHT BOURBON WHISKIES","vendor_name":"Diageo Americas","bottle_size":750,"case_cost":245.91}],"counties":[{"county":"Polk","population":430640},{"county":"Linn","population":211226},{"county":"Scott","population":165224},{"county":"Black Hawk","population":131090},{"county":"Johnson","population":130882}]},"exercise":{"query":"SELECT d.county, b.store, b.name, a.total, c.case_cost\nFROM sales a\nINNER JOIN stores   b ON a.store  = b.store\nINNER JOIN products c ON a.item   = c.item_no\nINNER JOIN counties d ON a.county = d.county\nLIMIT 1000;","rows":1000,"first":[{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","total":113.28,"case_cost":75.48,"date":"2014-11-04","item":63355,"item_description":"Skinnygirl Margarita","bottle_qty":12,"population":430640,"store_address":"2135 Se Delaware Ave\nAnkeny, IA 500210000\n(41.70846910100005, -93.58104333599994)","store_status":"A"},{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","total":238.56,"case_cost":158.89,"date":"2014-11-04","item":68036,"item_description":"Bailey's Original Irish Cream","bottle_qty":12,"population":430640,"store_address":"2135 Se Delaware Ave\nAnkeny, IA 500210000\n(41.70846910100005, -93.58104333599994)","store_status":"A"},{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","total":156.12,"case_cost":103.95,"date":"2014-11-04","item":69636,"item_description":"Dr. Mcgillicuddy's Cherry Schnapps","bottle_qty":12,"population":430640,"store_address":"2135 Se Delaware Ave\nAnkeny, IA 500210000\n(41.70846910100005, -93.58104333599994)","store_status":"A"},{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","total":108.0,"case_cost":71.95,"date":"2014-11-04","item":73986,"item_description":"Di Amore Amaretto","bottle_qty":12,"population":430640,"store_address":"2135 Se Delaware Ave\nAnkeny, IA 500210000\n(41.70846910100005, -93.58104333599994)","store_status":"A"},{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","total":180.0,"case_cost":120.0,"date":"2014-11-04","item":75214,"item_description":"Kinky Blue","bottle_qty":12,"population":430640,"store_address":"2135 Se Delaware Ave\nAnkeny, IA 500210000\n(41.70846910100005, -93.58104333599994)","store_status":"A"}],"slide_first":[{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","item":63355,"case_cost":75.48,"total":113.28},{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","item":68036,"case_cost":158.89,"total":238.56},{"county":"Polk","store":3656,"name":"Target Store T-1767 / Ankeny","item":69636,"case_cost":103.95,"total":156.12}]}}</script>
 <script type="module">
@@ -640,6 +680,35 @@ function tableCard(t, traceColumn) {
   const extra = T[t].columns.length - columns.length;
   return `<h3>${t}</h3><p class="caption">${traceColumn ? `${esc(traceColumn)} from the first result row` : `${fmt(rows.length)} sampled rows`}</p>${example}${example ? `<details><summary>${fmt(rows.length)} sampled rows</summary>${samples}</details>` : samples}${extra ? `<p class="caption">+${fmt(extra)} more columns in the side panel</p>` : ''}`;
 }
+// Lineage uses only the recorded first result row, never a different sample row.
+const LINEAGE_JOIN = { county: 'county', store: 'store', name: 'store', case_cost: 'item', total: null };
+function lineageRows(column) {
+  const row = D.exercise.first[0], c = USER_COLS.find(c => c.name === column);
+  const project = fields => Object.fromEntries(fields.filter(([, source]) => Object.hasOwn(row, source)).map(([name, source]) => [name, row[source]]));
+  const sales = project(['date', 'store', 'county', 'item', 'bottle_qty', 'total'].map(name => [name, name]));
+  const parentFields = {
+    counties: [['county', 'county'], ['population', 'population']],
+    stores: [['store', 'store'], ['name', 'name'], ['store_address', 'store_address'], ['store_status', 'store_status']],
+    products: [['item_no', 'item'], ['item_description', 'item_description'], ['case_cost', 'case_cost']],
+  };
+  return { c, sales, parent: c.table === 'sales' ? null : project(parentFields[c.table]), key: LINEAGE_JOIN[column] };
+}
+function lineageTable(table, record, highlightColumn) {
+  const columns = Object.keys(record);
+  return `<div class="data-scroll" tabindex="0" aria-label="${table} in the first result row"><table data-lineage-table="${table}" data-source="exercise.first"><thead><tr>${columns.map(name => `<th>${esc(name)}</th>`).join('')}</tr></thead><tbody><tr>${columns.map(name => {
+    const value = record[name], text = cellValue(name, value);
+    return `<td data-column="${name}" class="${name === highlightColumn ? 'lineage-cell ' : ''}${typeof value === 'number' ? 'num' : ''}"><span${typeof value === 'string' && value.length > 18 ? ' class="cell-text"' : ''}>${esc(text)}</span></td>`;
+  }).join('')}</tr></tbody></table></div>`;
+}
+function renderLineage(column) {
+  const { c, sales, parent, key } = lineageRows(column);
+  const quote = value => typeof value === 'string' ? `'${value}'` : cellValue(key, value);
+  const parentKey = key === 'item' ? 'item_no' : key;
+  const matched = key && Object.hasOwn(sales, key) && Object.hasOwn(parent, parentKey) && sales[key] === parent[parentKey];
+  const join = key ? `<div class="lineage-join" data-lineage-join="${key}"><code>${esc(c.via)}</code><span class="match">${matched ? `<span aria-label="Matched">✓</span> ${esc(quote(sales[key]))} = ${esc(quote(parent[parentKey]))}` : 'Join keys were not recorded in this row.'}</span></div><h4>${c.table}</h4>${lineageTable(c.table, parent, column)}` : '<p class="lineage-join">Stored in sales; no join needed.</p>';
+  return `<h3 tabindex="-1">How this value got here</h3><p class="caption">${esc(cellValue(column, D.exercise.first[0][column]))} &middot; ${c.table}.${column} &middot; first result row</p><h4>sales</h4>${lineageTable('sales', sales, key || column)}${join}<p class="caption">Only fields recorded in the first result row are shown.</p>`;
+}
+
 function designCard(k) {
   const mappings = Object.entries(DESIGN_MAP[k]).map(([t, cols]) => `<li><button class="linkbtn" data-go="t:${t}">${t}</button>: ${cols.map(c => `<code>${esc(c)}</code>`).join(', ')}</li>`).join('');
   const note = k === 'Store' ? 'The design assigns a county to each store. As built, county is recorded on sales.' : ['Vendor', 'Category'].includes(k) ? `No separate ${k.toLowerCase()} table is stored.` : 'Stored columns keep the link to the design.';
@@ -665,6 +734,9 @@ try {
 const panel = document.getElementById('panel');
 
 if (!renderer) {
+  updateThemeButton();
+  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+  document.querySelectorAll('[data-view], #walkBtn').forEach(button => { button.disabled = true; });
   document.body.classList.add('tv');
   renderTableView();
   document.getElementById('tableView').hidden = false;
@@ -763,9 +835,7 @@ function applyTheme() {
   applyPalette();
   for (const [m, prop, token] of themed) m[prop].set(css(token));
   scene.background = new THREE.Color(css('--stage'));
-  document.querySelectorAll('[data-theme-choice]').forEach(button => {
-    button.setAttribute('aria-pressed', String(button.dataset.themeChoice === document.documentElement.dataset.theme));
-  });
+  updateThemeButton();
 }
 
 const pickables = [];
@@ -1140,12 +1210,14 @@ let anim = null;
 let selected = null;
 let focus = null; // Depth two: changing the object replaces the detail, not the return view.
 let returnView = null;
+let lineage = null, lineageCamera = null;
 const backBtn = document.getElementById('backBtn');
 const leaders = document.getElementById('focusLeaders');
 const cardAnchor = document.createElement('div');
 cardAnchor.className = 'scene-anchor';
 const cardEl = document.createElement('section');
 cardEl.className = 'scene-card';
+cardEl.id = 'focusCard';
 cardEl.setAttribute('aria-label', 'Focused data');
 cardAnchor.append(cardEl);
 const cardObject = new CSS2DObject(cardAnchor);
@@ -1166,13 +1238,20 @@ for (const c of USER_COLS) {
     const dot = new THREE.Mesh(new THREE.SphereGeometry(G.dotRadius, G.rodSegments, G.tubeSides), mat('basic', '--key'));
     group.add(dot); return dot;
   });
-  const el = document.createElement('div');
+  const el = document.createElement('button');
+  el.type = 'button';
   el.className = 'path-label';
   el.hidden = true;
   el.setAttribute('aria-hidden', 'true');
   el.dataset.column = c.name;
+  el.dataset.lineage = c.name;
+  el.setAttribute('aria-controls', 'focusCard');
+  el.setAttribute('aria-expanded', 'false');
+  el.setAttribute('aria-label', `${c.name}: ${cellValue(c.name, D.exercise.first[0][c.name])}. See how this value got here`);
   el.textContent = `↑ ${c.name} · ${cellValue(c.name, D.exercise.first[0][c.name])}`;
-  el.title = `${c.table} → ${c.entity} → ${c.name}`;
+  el.addEventListener('click', () => openLineage(c.name));
+  el.addEventListener('pointerenter', () => { traces[c.name].pointerOver = true; });
+  el.addEventListener('pointerleave', () => { traces[c.name].pointerOver = false; });
   const badge = new CSS2DObject(el);
   badge.visible = false;
   badge.center.set(0, 0.5);
@@ -1185,7 +1264,7 @@ for (const c of USER_COLS) {
   preview.visible = false;
   own(preview, 'u:' + c.name);
   scene.add(preview);
-  traces[c.name] = { group, curve, dots, badge, preview };
+  traces[c.name] = { group, curve, dots, badge, preview, t: 0.54, lastTime: null, pointerOver: false };
 }
 function setActiveTrace(column = null) {
   for (const [name, trace] of Object.entries(traces)) {
@@ -1196,7 +1275,86 @@ function setActiveTrace(column = null) {
     trace.badge.visible = active;
     trace.badge.element.hidden = !active;
     trace.badge.element.setAttribute('aria-hidden', String(!active));
+    trace.badge.element.tabIndex = active ? 0 : -1;
+    if (!active) { trace.lastTime = null; trace.pointerOver = false; }
   }
+}
+
+const zoomBar = document.getElementById('zoomBar');
+const zoomRange = document.getElementById('zoomRange');
+function syncZoom() {
+  const distance = camera.position.distanceTo(controls.target);
+  zoomRange.min = controls.minDistance;
+  zoomRange.max = controls.maxDistance;
+  zoomRange.value = distance;
+  zoomRange.setAttribute('aria-valuetext', `Camera distance ${fmt(distance, { maximumFractionDigits: 1 })}`);
+  document.getElementById('zoomIn').disabled = distance <= controls.minDistance + 0.05;
+  document.getElementById('zoomOut').disabled = distance >= controls.maxDistance - 0.05;
+}
+function zoomTo(distance, instant = false) {
+  const target = controls.target.clone();
+  const direction = camera.position.clone().sub(target).normalize();
+  const bounded = THREE.MathUtils.clamp(distance, controls.minDistance, controls.maxDistance);
+  moveCamera(target.clone().addScaledVector(direction, bounded), target, instant);
+  syncZoom();
+}
+function zoomBy(factor) {
+  const distance = anim ? anim.p1.distanceTo(anim.q1) : camera.position.distanceTo(controls.target);
+  zoomTo(distance * factor);
+}
+function fitCurrentView() {
+  if (focus) { focusCamera(); return; }
+  const v = VIEWS[view], target = new THREE.Vector3(...v.target);
+  moveCamera(new THREE.Vector3(...v.pos).sub(target).multiplyScalar(fitScale()).add(target), target);
+}
+document.getElementById('zoomIn').addEventListener('click', () => zoomBy(0.82));
+document.getElementById('zoomOut').addEventListener('click', () => zoomBy(1 / 0.82));
+document.getElementById('zoomFit').addEventListener('click', fitCurrentView);
+zoomRange.addEventListener('input', () => zoomTo(Number(zoomRange.value), true));
+
+function lineageJoinId() { return lineage && LINEAGE_JOIN[lineage] ? 'j:' + LINEAGE_JOIN[lineage] : null; }
+function resetLineage() {
+  lineage = null; lineageCamera = null;
+  for (const trace of Object.values(traces)) trace.badge.element.setAttribute('aria-expanded', 'false');
+  backBtn.innerHTML = '&larr; Back <span class="note">Esc</span>';
+  backBtn.setAttribute('aria-label', 'Back to previous view');
+}
+function openLineage(column) {
+  if (focus?.column !== column || anim) return;
+  if (lineage === column) { cardEl.querySelector('h3').focus({ preventScroll: true }); return; }
+  clearHover();
+  lineageCamera = { pos: camera.position.clone(), target: controls.target.clone(), maxDistance: controls.maxDistance, width: stage.clientWidth, height: stage.clientHeight };
+  lineage = column;
+  // The source sale is part of the chain; the matching rod is handled separately
+  // so unmatched red cube piles do not become part of this successful row's path.
+  focus.related.add('t:sales');
+  cardEl.className = 'scene-card lineage-card';
+  cardEl.innerHTML = renderLineage(column);
+  cardEl.scrollTop = 0;
+  traces[column].badge.element.setAttribute('aria-expanded', 'true');
+  backBtn.innerHTML = '&larr; Back to trace <span class="note">Esc</span>';
+  backBtn.setAttribute('aria-label', 'Back to trace');
+  highlight(selected);
+  refreshScene();
+  if (LINEAGE_JOIN[column]) fitTraceCamera(column);
+  cardEl.querySelector('h3').focus({ preventScroll: true });
+}
+function closeLineage() {
+  if (!lineage) return;
+  const column = lineage, previous = lineageCamera, c = USER_COLS.find(c => c.name === column);
+  clearHover();
+  resetLineage();
+  focus.related = relatedTo(focus.sel);
+  cardEl.className = 'scene-card';
+  cardEl.innerHTML = tableCard(c.table, column);
+  cardEl.scrollTop = 0;
+  highlight(selected);
+  refreshScene();
+  if (previous && previous.width === stage.clientWidth && previous.height === stage.clientHeight) {
+    controls.maxDistance = previous.maxDistance;
+    moveCamera(previous.pos, previous.target);
+  } else focusCamera();
+  traces[column].badge.element.focus({ preventScroll: true });
 }
 
 function fitScale() {
@@ -1216,6 +1374,7 @@ controls.addEventListener('start', () => { anim = null; controlsBusy = true; cle
 controls.addEventListener('end', () => { controlsBusy = false; });
 function clearFocus() {
   clearHover();
+  resetLineage();
   focus = null; returnView = null;
   cardObject.visible = false;
   backBtn.hidden = true;
@@ -1281,7 +1440,7 @@ function refreshScene() {
       if (!layer) layer = Object.keys(layerGroups).find(k => layerGroups[k] === p);
       p = p.parent;
     }
-    const related = ids?.some(id => focus?.related.has(id));
+    const related = ids?.some(id => focus?.related.has(id)) || o === joinParts[lineageJoinId()];
     const factor = focus ? (related ? 1 : 0.15) : (layer && view !== 'all' && layer !== view ? 0.1 : 1);
     if (o.userData.shadowCaster) o.castShadow = FX.shadows && factor === 1;
     const material = o.material;
@@ -1300,13 +1459,13 @@ function refreshLabels() {
       const index = USER_COLS.findIndex(c => 'u:' + c.name === id);
       L.o.position.y = G.column.labelY + (view === 'all' && !focus ? S.labels.columnStagger[index] : 0);
     }
-    let show = view === 'all' || L.layer === view || !!focus?.related.has(id);
+    let show = view === 'all' || L.layer === view || !!focus?.related.has(id) || id === lineageJoinId();
     if (L.cls.includes('layer')) show = !focus && view === 'all' && stage.clientWidth > 640;
     if (L.cls.includes('tbl')) show = view === 'user' || !!focus?.column || focus?.sel === 'view:user';
     if (L.o.parent === overlay && !overlay.visible) show = false;
     if (!focus && view === 'all' && /key|crit|warn/.test(L.cls) && !stepState.on) show = false;
     L.el.classList.toggle('hidden', !show);
-    L.el.style.opacity = show && focus && !L.cls.includes('tbl') && !focus.related.has(id) ? '0.15' : '';
+    L.el.style.opacity = show && focus && !L.cls.includes('tbl') && !focus.related.has(id) && id !== lineageJoinId() ? '0.15' : '';
     if (L.el.tagName === 'BUTTON') L.el.tabIndex = show && id ? 0 : -1;
     L.el.querySelectorAll('button').forEach(b => { b.tabIndex = show ? 0 : -1; });
   }
@@ -1347,7 +1506,7 @@ function layoutSceneLabels() {
     return { left: p.x - 18, right: p.x + 18, top: p.y - 18, bottom: p.y + 18 };
   });
   const stageRect = stage.getBoundingClientRect();
-  for (const el of [document.getElementById('legend'), stage.querySelector('.hint'), stepsNav]) {
+  for (const el of [document.getElementById('legend'), stage.querySelector('.hint'), zoomBar, stepsNav]) {
     const r = el.getBoundingClientRect();
     if (r.width && r.height) occupied.push({ left: r.left - stageRect.left, right: r.right - stageRect.left, top: r.top - stageRect.top, bottom: r.bottom - stageRect.top });
   }
@@ -1421,7 +1580,7 @@ function fitTraceCamera(column, instant) {
   const c = USER_COLS.find(c => c.name === column);
   const points = mapPoints[column].map(p => p.clone());
   // Fit the actual endpoint blocks too, so the card cannot hide their lower edges.
-  for (const sel of ['u:' + column, 'd:' + c.entity, 't:' + c.table]) {
+  for (const sel of new Set(['u:' + column, 'd:' + c.entity, 't:' + c.table, ...(lineageJoinId() ? ['t:sales'] : [])])) {
     const o = pickables.find(o => o.userData.sel === sel);
     const box = new THREE.Box3().setFromObject(o);
     for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) points.push(new THREE.Vector3(x, y, z));
@@ -1471,6 +1630,7 @@ function focusCamera(instant = false) {
   moveCamera(target.clone().addScaledVector(direction, distance), target, instant);
 }
 function enterFocus(sel) {
+  resetLineage();
   if (!focus) returnView = { view, selected, pos: camera.position.clone(), target: controls.target.clone(), step: stepState.on ? stepState.step : 0 };
   const column = sel.startsWith('u:') ? sel.slice(2) : null;
   focus = { sel, column, related: relatedTo(sel) };
@@ -1507,6 +1667,7 @@ function enterFocus(sel) {
   refreshScene();
 }
 function backFocus() {
+  if (lineage) { closeLineage(); return; }
   if (!focus) return;
   const previous = returnView;
   const currentPosition = camera.position.clone(), currentTarget = controls.target.clone();
@@ -1533,7 +1694,7 @@ function highlight(sel) {
     p.edgeMat.opacity = factor * opacity;
   }
   for (const L of labels) L.el.classList.toggle('sel', L.el.dataset.sel === sel);
-  for (const [k, r] of Object.entries(joinParts)) r.scale.set(k === sel ? 2 : 1, 1, k === sel ? 2 : 1);
+  for (const [k, r] of Object.entries(joinParts)) { const active = k === sel || k === lineageJoinId(); r.scale.set(active ? 2 : 1, 1, active ? 2 : 1); }
   for (const [k, r] of Object.entries(relParts)) { r.material.color.set(css(k === sel ? '--key' : '--ink-2')); r.scale.set(k === sel ? 2 : 1, 1, k === sel ? 2 : 1); }
   invalidateShadows();
 }
@@ -1595,7 +1756,10 @@ function layoutFocusCards() {
 function flowTrace(now) {
   if (!focus?.column) return;
   const trace = traces[focus.column];
-  const t = STATIC || reduceMotion ? 0.54 : ((now / 14000) % 1);
+  const paused = trace.pointerOver || document.activeElement === trace.badge.element || lineage === focus.column;
+  if (!STATIC && !reduceMotion && !paused && trace.lastTime !== null) trace.t = (trace.t + Math.min(now - trace.lastTime, 100) / 14000) % 1;
+  trace.lastTime = now;
+  const t = STATIC || reduceMotion ? 0.54 : trace.t;
   trace.dots.forEach((dot, i) => dot.position.copy(trace.curve.getPoint((t + i / trace.dots.length) % 1)));
   trace.badge.position.copy(trace.curve.getPoint(t));
 }
@@ -1626,6 +1790,7 @@ const hoverMedia = matchMedia('(hover: hover)');
 const hoverCard = document.getElementById('hoverCard');
 const hoverFact = document.getElementById('hoverFact');
 const hoverAction = document.getElementById('hoverAction');
+const hoverDetail = document.getElementById('hoverDetail');
 const pileTip = document.getElementById('pileTip');
 const HOVER = { delay: 120, edgeOpacity: 0.84, mix: 0.65, emissive: 0.10, mappingOpacity: 0.65, gap: 16, padding: 12 };
 let hoverId = null, hoverPreview = null, hoverSource = null, pendingHover = null;
@@ -1636,6 +1801,8 @@ function hoverAllowed() {
 }
 function hoverEligible(id) {
   if (!id) return false;
+  if (id.startsWith('v:')) return focus?.column === id.slice(2);
+  if (id === lineageJoinId()) return true;
   if (id.startsWith('view:')) return !focus && (view === 'all' || view === id.slice(5));
   if (focus && !focus.related.has(id)) return false;
   return pickables.some(o => o.userData.sel === id && isVisible(o));
@@ -1676,6 +1843,10 @@ function brightenEdge(m) {
   m.opacity = Math.max(m.opacity, HOVER.edgeOpacity);
 }
 function highlightHover(id) {
+  if (id.startsWith('v:')) {
+    traces[id.slice(2)].badge.element.classList.add('is-hover');
+    id = 'u:' + id.slice(2);
+  }
   const ids = new Set([id]), [kind, key] = id.split(':');
   if (kind === 'j') { ids.add('t:sales'); ids.add('t:' + JOINS[key].parent); }
   if (kind === 'r') key.split('-').forEach(name => ids.add('d:' + name));
@@ -1728,6 +1899,10 @@ function highlightHover(id) {
 }
 function hoverCopy(id) {
   const [kind, key] = id.split(':');
+  if (kind === 'v') {
+    const c = USER_COLS.find(c => c.name === key);
+    return [`${cellValue(key, D.exercise.first[0][key])} · ${c.table}.${key}`, 'Click to see how this value got here', c.table === 'sales' ? 'Stored in sales; no join needed' : `Reached through ${c.via}`];
+  }
   if (kind === 't') return [`${key} · ${fmt(T[key].rows)} rows · ${fmt(T[key].columns.length)} columns`, 'Click to zoom in and read rows'];
   if (kind === 'u') return [`${key} · from ${USER_COLS.find(c => c.name === key).table}`, 'Click to trace this column to its table'];
   if (kind === 'j') return [`${JOINS[key].label} · ${fmt(SALES - J[key].unmatched_rows)} matched`, 'Click to see which keys find a match'];
@@ -1763,7 +1938,9 @@ function setHover(id, source, now) {
   hoverId = id;
   hoverSource = { ...source, since: now, rect: hoveredObjectRect(id, source.el) };
   highlightHover(id);
-  const [fact, action] = hoverCopy(id);
+  const [fact, action, detail] = hoverCopy(id);
+  hoverDetail.hidden = !detail;
+  hoverDetail.textContent = detail || '';
   hoverFact.textContent = fact;
   hoverAction.textContent = source.keyboard ? action.replace(/^Click/, 'Press Enter') : action;
   if (!source.panel) {
@@ -1775,9 +1952,9 @@ function setHover(id, source, now) {
   }
 }
 function hoverTarget(el) {
-  const target = el.closest?.('[data-sel], [data-result-col], [data-go], [data-hover]');
+  const target = el.closest?.('[data-lineage], [data-sel], [data-result-col], [data-go], [data-hover]');
   if (!target || (!stage.contains(target) && !panel.contains(target))) return null;
-  const id = target.dataset.sel || (target.dataset.resultCol ? 'u:' + target.dataset.resultCol : target.dataset.go || target.dataset.hover);
+  const id = (target.dataset.lineage ? 'v:' + target.dataset.lineage : target.dataset.sel) || (target.dataset.resultCol ? 'u:' + target.dataset.resultCol : target.dataset.go || target.dataset.hover);
   return { id, el: target, panel: panel.contains(target) };
 }
 function flushHover(now) {
@@ -1872,15 +2049,19 @@ function scrollsInside(el, ev) {
   }
   return false;
 }
+// three r160 zooms by 0.95^(|deltaY| / (100 * devicePixelRatio)). A trackpad pinch arrives as
+// ctrl+wheel with deltaY of about 1 to 5 per event, so it barely moved; a mouse wheel sends 50 to 100.
+const PINCH_GAIN = 12;
 stage.addEventListener('wheel', ev => {
   if (forwardedWheel.has(ev)) return;
   const canvasEl = renderer.domElement;
-  if (ev.target === canvasEl) { ev.preventDefault(); return; } // the controls handle it on the canvas
-  if (!ev.ctrlKey && scrollsInside(ev.target, ev)) return;    // let a scrollable card scroll
+  if (ev.target !== canvasEl && !ev.ctrlKey && scrollsInside(ev.target, ev)) return; // let a scrollable card scroll
   ev.preventDefault();
   ev.stopPropagation();
+  const unit = ev.deltaMode === 1 ? 16 : ev.deltaMode === 2 ? 100 : 1; // lines or pages to pixels
+  const deltaY = ev.deltaY * unit * (ev.ctrlKey ? PINCH_GAIN : 1);
   const fwd = new WheelEvent('wheel', {
-    deltaX: ev.deltaX, deltaY: ev.deltaY, deltaZ: ev.deltaZ, deltaMode: ev.deltaMode, ctrlKey: ev.ctrlKey,
+    deltaX: ev.deltaX * unit, deltaY, deltaMode: 0,
     clientX: ev.clientX, clientY: ev.clientY, screenX: ev.screenX, screenY: ev.screenY, bubbles: true, cancelable: true
   });
   forwardedWheel.add(fwd);
@@ -2076,6 +2257,12 @@ function renderPanel(sel) {
   return renderOverview();
 }
 function wirePanel() {
+  if (!panel.querySelector('#textVersion')) panel.insertAdjacentHTML('beforeend', '<footer class="panel-footer"><a id="textVersion">Text version</a></footer>');
+  const textLink = panel.querySelector('#textVersion');
+  const params = new URLSearchParams(location.hash.slice(1));
+  params.set('tv', '1');
+  textLink.href = '#' + params.toString();
+  textLink.onclick = ev => { ev.preventDefault(); setTextVersion(true); };
   // Exact names only. SQL aliases and bare column names have no inferred target.
   panel.querySelectorAll('code').forEach(el => {
     const [table, column, extra] = el.textContent.trim().split('.');
@@ -2128,12 +2315,14 @@ function startWalk(n = 1) {
   stepState.on = true;
   document.getElementById('walkBtn').setAttribute('aria-pressed', 'true');
   stepsNav.hidden = false;
+  labelLayoutKey = '';
   goStep(n);
 }
 function stopWalk(resetPanel) {
   if (!stepState.on) return;
   stepState.on = false; stepState.step = 0;
   stepsNav.hidden = true;
+  labelLayoutKey = '';
   document.getElementById('walkBtn').setAttribute('aria-pressed', 'false');
   for (const m of Object.values(mapMats)) m.color.set(css('--muted'));
   if (resetPanel) { selected = null; setView(view); panel.innerHTML = renderOverview(); wirePanel(); highlight(null); }
@@ -2145,29 +2334,56 @@ function highlightWalkStep() {
   if (n === 4) for (const r of Object.values(joinParts)) r.scale.set(2, 1, 2);
   invalidateShadows();
 }
+function walkProgress(n) {
+  return `<ol class="walk-progress" aria-label="Exercise progress">${STEPS.map((_, i) => {
+    const step = i + 1, status = step < n ? 'done' : step === n ? 'current' : 'next';
+    return `<li><button type="button" data-step="${step}" data-progress="${status}"${step === n ? ' aria-current="step"' : ''} aria-label="Step ${fmt(step)}, ${status === 'done' ? 'completed' : status}">${step < n ? '✓' : fmt(step)}</button></li>`;
+  }).join('')}</ol>`;
+}
 function goStep(n) {
+  n = Math.max(1, Math.min(STEPS.length, n));
   stepState.step = n;
+  labelLayoutKey = '';
   const s = STEPS[n - 1];
-  stepsNav.querySelectorAll('button[data-s]').forEach(b => b.toggleAttribute('aria-current', b.dataset.s === String(n)));
-  stepsNav.querySelectorAll('button[aria-current]').forEach(b => b.setAttribute('aria-current', 'step'));
+  stepsNav.querySelectorAll('button[data-s]').forEach(b => {
+    const value = Number(b.dataset.s);
+    if (!Number.isFinite(value)) return;
+    const status = value < n ? 'done' : value === n ? 'current' : 'next';
+    b.dataset.progress = status;
+    if (value === n) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+    b.setAttribute('aria-label', `Step ${fmt(value)}, ${status === 'done' ? 'completed' : status}`);
+  });
+  stepsNav.querySelector('[data-s="prev"]').disabled = n === 1;
+  stepsNav.querySelector('[data-s="next"]').disabled = n === STEPS.length;
   setView(s.view);
   selected = s.sel;
   highlight(s.sel);
   highlightWalkStep();
   const lines = QUERY_LINES.map(([t, at]) => at > n ? '' : `<span class="${at === n ? 'new' : (t.startsWith('--') ? 'dim' : '')}">${esc(t)}</span>`).filter(Boolean).join('\n');
-  const result = n === 6 ? `<h3>Result (first rows of one run)</h3>${resultTable(firstRows).replace('<table>', '<table class="res">')}<p class="note">${fmt(D.exercise.rows)} rows returned.</p>` : '';
-  panel.innerHTML = `<h2>Step ${n} of ${STEPS.length}</h2>
+  const result = n === STEPS.length ? `<h3>Result (first rows of one run)</h3>${resultTable(firstRows).replace('<table>', '<table class="res">')}<p class="note">${fmt(D.exercise.rows)} rows returned.</p>` : '';
+  panel.innerHTML = `<h2>Step <span class="step-number">${fmt(n)}</span> of ${fmt(STEPS.length)}</h2>
+    ${walkProgress(n)}
     <p class="kicker">The six questions from the Class 3 slide "Translating Question to SQL query"</p>
     <p><b>&ldquo;${esc(s.q)}&rdquo;</b></p>
     <p>${s.a()}</p>
     <h3>The query so far</h3>
     <pre>${lines}</pre>
     ${result}
-    <p>${n < STEPS.length ? `<button class="btn" data-next>Next step</button>` : `<button class="btn" data-go="view:all">Back to all layers</button>`}</p>
+    <nav class="walk-actions" aria-label="Walk navigation"><button type="button" class="btn" data-prev${n === 1 ? ' disabled' : ''}>&larr; Previous</button>${n < STEPS.length ? '<button type="button" class="btn" data-next>Next step &rarr;</button>' : '<button type="button" class="btn" data-go="view:all">Finish &rarr;</button>'}</nav>
     ${SRC}`;
-  panel.querySelector('[data-next]')?.addEventListener('click', () => goStep(n + 1));
+  panel.querySelector('[data-next]')?.addEventListener('click', () => { goStep(n + 1); (panel.querySelector('[data-next]') || panel.querySelector('.walk-actions [data-go]')).focus({ preventScroll: true }); });
+  panel.querySelector('[data-prev]').addEventListener('click', () => { goStep(n - 1); (panel.querySelector('[data-prev]:not(:disabled)') || panel.querySelector('[data-next]')).focus({ preventScroll: true }); });
+  panel.querySelectorAll('[data-step]').forEach(b => b.addEventListener('click', () => { goStep(Number(b.dataset.step)); panel.querySelector(`[data-step="${b.dataset.step}"]`).focus({ preventScroll: true }); }));
   wirePanel();
 }
+document.addEventListener('keydown', ev => {
+  if (!stepState.on || document.body.classList.contains('tv') || !['ArrowLeft', 'ArrowRight'].includes(ev.key) || ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+  if (ev.target.isContentEditable || ev.target.closest('input, select, textarea')) return;
+  ev.preventDefault();
+  const origin = ev.target.closest('[data-next], [data-prev], [data-step]');
+  goStep(stepState.step + (ev.key === 'ArrowRight' ? 1 : -1));
+  if (origin) panel.querySelector('.walk-progress [aria-current="step"]').focus({ preventScroll: true });
+});
 buildStepsNav();
 
 /* --------------------------------------------------------- table view */
@@ -2179,7 +2395,7 @@ function renderTableView() {
     return `<tr><td class="c">${esc(j.on)}</td><td class="num">${fmt(SALES - s.unmatched_rows)}</td><td class="num">${fmt(s.unmatched_rows)}</td><td class="num">${fmt(s.parents_never_used)}</td></tr>`;
   }).join('');
   const des = Object.entries(DES).map(([k, e]) => `<tr><td>${k}</td><td>${esc(e.about)}</td><td class="num">${fmt(e.n)}</td></tr>`).join('');
-  tv.innerHTML = `<h2>Tables as built</h2><div class="grid">${tables}</div>
+  tv.innerHTML = `${renderer ? '<p><button type="button" class="btn" id="returnToScene">Back to 3D view</button></p>' : ''}<h2 tabindex="-1">Tables as built</h2><div class="grid">${tables}</div>
   <h2>Joins in the exercise</h2>
   <table class="res"><thead><tr><th>join</th><th class="num">sales rows matched</th><th class="num">not matched</th><th class="num">parent rows never used</th></tr></thead><tbody>${joins}</tbody></table>
   <p class="note">All three INNER JOINs together keep ${fmt(J.all_inner_kept)} of ${fmt(SALES)} sales rows; ${fmt(dropped)} are left out.</p>
@@ -2190,20 +2406,40 @@ function renderTableView() {
   <table class="res"><thead><tr><th>entity</th><th>grain</th><th class="num">rows</th></tr></thead><tbody>${des}</tbody></table>
   <p class="note">Relationships: ${DES_EDGES.map(e => e[2]).join('; ')}.</p>
   ${SRC}`;
+  tv.querySelector('#returnToScene')?.addEventListener('click', () => setTextVersion(false));
 }
-document.getElementById('tvBtn').addEventListener('click', ev => {
+function setTextVersion(on, moveFocus = true) {
   clearHover();
-  const on = ev.currentTarget.getAttribute('aria-pressed') !== 'true';
-  ev.currentTarget.setAttribute('aria-pressed', String(on));
+  const params = new URLSearchParams(location.hash.slice(1));
+  if (on) params.set('tv', '1'); else params.delete('tv');
+  history.replaceState(history.state, '', params.size ? '#' + params.toString() : location.pathname + location.search);
   document.body.classList.toggle('tv', on);
   const tv = document.getElementById('tableView');
   tv.hidden = !on;
-  if (on) renderTableView(); else resize();
+  if (on) {
+    renderTableView();
+    if (moveFocus) tv.querySelector('h2').focus({ preventScroll: true });
+  } else {
+    resize();
+    if (moveFocus) panel.querySelector('#textVersion')?.focus({ preventScroll: true });
+  }
+}
+document.getElementById('walkBtn').addEventListener('click', () => {
+  if (document.body.classList.contains('tv')) setTextVersion(false, false);
+  if (stepState.on) stopWalk(true); else startWalk(1);
 });
-document.getElementById('walkBtn').addEventListener('click', () => (stepState.on ? stopWalk(true) : startWalk(1)));
-document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => { stopWalk(false); setView(b.dataset.view); }));
+document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => {
+  if (document.body.classList.contains('tv')) setTextVersion(false, false);
+  stopWalk(false); setView(b.dataset.view);
+}));
 
 /* Theme changes recolour the current scene without rebuilding navigation state. */
+function updateThemeButton() {
+  const label = document.documentElement.dataset.theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+  const button = document.getElementById('themeToggle');
+  button.setAttribute('aria-label', label);
+  button.title = label;
+}
 function refreshTheme() {
   clearHover();
   applyTheme();
@@ -2211,12 +2447,13 @@ function refreshTheme() {
   highlightWalkStep();
   refreshScene();
 }
-document.querySelectorAll('[data-theme-choice]').forEach(button => button.addEventListener('click', () => {
+function toggleTheme() {
   const params = new URLSearchParams(location.hash.slice(1));
-  params.set('theme', button.dataset.themeChoice);
+  params.set('theme', document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
   history.replaceState(history.state, '', '#' + params.toString());
-  refreshTheme();
-}));
+  if (renderer) refreshTheme(); else { applyPalette(); updateThemeButton(); }
+}
+document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 window.addEventListener('hashchange', refreshTheme);
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
   if (new URLSearchParams(location.hash.slice(1)).get('theme') === 'auto') refreshTheme();
@@ -2249,6 +2486,7 @@ function frame(now) {
     if (t >= 1) anim = null;
   }
   controls.update();
+  syncZoom();
   flushHover(now);
   flowTrace(now);
   renderer.render(scene, camera);
@@ -2266,11 +2504,11 @@ panel.innerHTML = renderOverview();
 wirePanel();
 if (hashParams.get('step')) startWalk(Number(hashParams.get('step')));
 else if (hashParams.get('sel')) select(hashParams.get('sel'), { focus: hashParams.get('focus') === '1' });
-if (hashParams.get('tv') === '1') document.getElementById('tvBtn').click();
+if (hashParams.get('tv') === '1') setTextVersion(true, false);
 requestAnimationFrame(frame);
 window.__ex = {
   get effects() { return { mode: FX.mode, shadowMaps: renderer.shadowMap.enabled, environment: !!scene.environment, contactShadows: !!contactTexture }; },
-  get state() { return { view, selected, focus: focus?.sel || null, animating: !!anim, hover: hoverId, hoverPreview }; },
+  get state() { return { view, selected, focus: focus?.sel || null, animating: !!anim, lineage, hover: hoverId, hoverPreview }; },
   get cameraDistance() { return camera.position.distanceTo(controls.target); }, // test hook for wheel and pinch zoom
   // test hook: screen position (CSS px, page coordinates) of the centre of a clickable object
   screenOf(sel) {
